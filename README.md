@@ -1,0 +1,232 @@
+# Agents Meeting
+
+Système de débat multi-agents avec IA - Interface TUI.
+
+## Description
+
+Agents Meeting permet de lancer des débats entre plusieurs agents IA sur un sujet donné. Un agent "leader" modère le débat en :
+- Présentant le sujet initial
+- Faisant des interventions de synthèse entre les tours
+- Posant des questions affinées pour approfondir le débat
+- Produisant une synthèse finale
+
+Les agents participants répondent en parallèle à chaque tour.
+
+## Installation
+
+```bash
+# Créer l'environnement virtuel
+./install.sh
+
+# Activer l'environnement
+source venv/bin/activate
+```
+
+## Utilisation
+
+### Mode TUI (interface graphique terminal)
+
+```bash
+python -m src.main agents-meeting.yaml
+```
+
+### Mode CLI (ligne de commande)
+
+```bash
+python -m src.main agents-meeting.yaml --cli
+```
+
+### Créer un fichier de config
+
+```bash
+python -m src.main --create-config
+```
+
+### Modifier le prompt
+
+```bash
+python -m src.main agents-meeting.yaml --prompt "Votre question ici"
+```
+
+## Raccourcis clavier (mode TUI)
+
+| Touche | Action | Disponibilité |
+|--------|--------|---------------|
+| `Entrée` | Démarrer le débat | Écran d'accueil |
+| `Échap` | Arrêter le débat en cours | Pendant le débat |
+| `m` | Afficher / masquer la zone modérateur | Pendant / après le débat |
+| `w` | Sauvegarder la conversation en Markdown | Pendant / après le débat |
+| `c` | Continuer avec une nouvelle question | Après la fin du débat |
+| `r` | Nouvelle question (retour à l'accueil) | Pendant / après le débat |
+| `q` | Quitter | Partout |
+
+## Sauvegarde de la conversation
+
+Appuyer sur `w` pendant ou après le débat génère un fichier Markdown contenant :
+- Les interventions du modérateur (ouverture, synthèses par tour, conclusion)
+- Les réponses de chaque agent par tour
+
+**Nom du fichier :**
+Une boîte de dialogue demande le nom du fichier, avec une proposition par défaut `debate_YYYY-MM-DD_HH-MM.md`. Il suffit d'appuyer sur Entrée pour l'accepter.
+
+## Continuation du débat
+
+À la fin d'un débat, appuyer sur `c` permet de lancer une nouvelle session sur une question complémentaire :
+
+- Le modérateur analyse sa synthèse finale et **propose automatiquement une question de suivi**, pré-remplie dans un champ éditable
+- La question peut être modifiée librement avant confirmation
+- Le **modérateur conserve son historique** et dispose du contexte du débat précédent
+- Les **agents participants repartent à zéro**, mais reçoivent la synthèse du modérateur comme point de départ
+- Le même nombre de tours que le débat initial est utilisé
+
+## Configuration YAML
+
+### Structure complète
+
+```yaml
+title: "Titre de la réunion"
+
+api_keys:
+  openai: "env:OPENAI_API_KEY"
+  anthropic: "env:ANTHROPIC_API_KEY"
+  ollama: "http://localhost:11434"
+  custom: "env:CUSTOM_API_KEY"
+
+agents:
+  - name: "Nom de l'agent"
+    role: "Rôle/description de l'agent"
+    provider: "openai | anthropic | ollama | custom"
+    model: "gpt-4o"
+    temperature: 0.7
+    max_tokens: 2000
+    api_key: "env:MON_API_KEY"  # Optionnel, prioritaire sur api_keys global
+    base_url: "https://api.example.com"  # Optionnel
+    is_leader: true
+
+debate:
+  rounds: 2
+  initial_prompt: "Question/prompt initial"
+  system_prompt: "System prompt optionnel pour tous les agents"
+  leader_prompt: "Instructions additionnelles pour le leader"
+```
+
+### Détails des paramètres
+
+#### Top-level
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `title` | string | Titre de la réunion |
+
+#### api_keys
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `openai` | string | Clé API OpenAI (ou `env:VARIABLE`) |
+| `anthropic` | string | Clé API Anthropic (ou `env:VARIABLE`) |
+| `ollama` | string | URL du serveur Ollama |
+| `custom` | string | Clé API custom (ou `env:VARIABLE`) |
+
+#### agents[]
+
+| Paramètre | Type | Description | Défaut |
+|-----------|------|-------------|--------|
+| `name` | string | Nom de l'agent | - |
+| `role` | string | Rôle/description de l'agent | - |
+| `provider` | string | `openai`, `anthropic`, `ollama`, `custom` | - |
+| `model` | string | Modèle à utiliser | `gpt-4o` |
+| `temperature` | float | Température (0.0-2.0) | 0.7 |
+| `max_tokens` | int | Limite de tokens | - |
+| `api_key` | string | Clé API locale (ou `env:VARIABLE`) | - |
+| `base_url` | string | URL de l'API (remplace la valeur par défaut) | - |
+| `is_leader` | boolean | Agent leader/modérateur | `false` |
+
+#### debate
+
+| Paramètre | Type | Description | Défaut |
+|-----------|------|-------------|--------|
+| `rounds` | int | Nombre de tours (1-10) | 2 |
+| `initial_prompt` | string | Question/prompt initial | - |
+| `system_prompt` | string | System prompt global | - |
+| `leader_prompt` | string | Instructions pour le leader | - |
+
+## Providers
+
+| Provider | Modèles disponibles |
+|----------|---------------------|
+| OpenAI | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc. |
+| Anthropic | `claude-3-5-sonnet-*`, `claude-3-opus-*`, etc. |
+| Ollama | Modèles locaux (`llama2`, `mistral`, `phi3`, etc.) |
+| Custom | API compatible OpenAI |
+
+### Ollama (local)
+
+Pour utiliser Ollama en local :
+
+1. Installer Ollama : https://ollama.ai
+2. Lancer le serveur : `ollama serve`
+3. Télécharger un modèle : `ollama pull llama2`
+
+Exemple de configuration :
+
+```yaml
+agents:
+  - name: "Agent1"
+    provider: "ollama"
+    model: "llama2"
+    base_url: "http://localhost:11434"
+```
+
+## Exemple complet
+
+```yaml
+title: "Débat: L'IA et l'emploi"
+
+api_keys:
+  openai: "env:OPENAI_API_KEY"
+
+agents:
+  - name: "Modérateur"
+    role: "Anime le débat, synthétise les positions"
+    provider: "openai"
+    model: "gpt-4o"
+    temperature: 0.5
+    is_leader: true
+
+  - name: "Optimiste"
+    role: "Voit les opportunités et le potentiel de l'IA"
+    provider: "openai"
+    model: "gpt-4o"
+    temperature: 0.8
+
+  - name: "Sceptique"
+    role: "Remet en question les bénéfices et souligne les risques"
+    provider: "openai"
+    model: "gpt-4o"
+    temperature: 0.7
+
+debate:
+  rounds: 2
+  initial_prompt: "L'IA va-t-elle remplacer les développeurs ?"
+  system_prompt: "Tu participes à un débat structuré. Sois concis et argumenté."
+  leader_prompt: "En tant que modérateur, assure-toi que tous les points de vue sont exprimés."
+```
+
+## Variables d'environnement
+
+Les clés API peuvent être passées via des variables d'environnement :
+
+```bash
+export OPENAI_API_KEY="sk-..."
+export ANTHROPIC_API_KEY="sk-ant-..."
+
+python -m src.main agents-meeting.yaml
+```
+
+Ou directement dans le fichier YAML avec le préfixe `env:` :
+
+```yaml
+api_keys:
+  openai: "env:OPENAI_API_KEY"
+```
+# debate-ia-agent
