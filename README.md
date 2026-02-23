@@ -2,6 +2,13 @@
 
 Système de débat multi-agents avec IA - Interface TUI.
 
+## Demo
+
+![Demo 1](preview/capture1.jpg)
+![Demo 2](preview/capture2.jpg)
+
+Vidéo de démonstration : <https://www.youtube.com/watch?v=A9FqB06vN3s>
+
 ## Description
 
 Agents Meeting permet de lancer des débats entre plusieurs agents IA sur un sujet donné. Un agent "leader" modère le débat en :
