@@ -826,10 +826,7 @@ class DebateScreen(Screen):
             status.update(f"[green bold]Débat terminé !{elapsed_str}[/green bold]")
 
         elif event.type == "continuation_thinking":
-            # Ouvrir immédiatement le dialogue en mode loading
-            screen = ContinueScreen(loading=True)
-            self._continue_screen = screen
-            self.app.push_screen(screen, self._on_continue_chosen)
+            pass  # L'ouverture du dialogue se fait manuellement via la touche c
 
         elif event.type == "continuation_suggestion":
             self._continuation_question = event.content or ""
@@ -877,11 +874,10 @@ class DebateScreen(Screen):
     def action_continue_debate(self) -> None:
         if not self._debate_ended or self.debate_manager is None:
             return
-        # Ouvrir un nouveau dialogue avec la question déjà disponible (fallback touche c)
-        screen = ContinueScreen(loading=False)
+        loading = not bool(self._continuation_question)
+        screen = ContinueScreen(loading=loading)
         self._continue_screen = screen
         self.app.push_screen(screen, self._on_continue_chosen)
-        # Mettre à jour la question immédiatement si disponible
         if self._continuation_question:
             screen.set_question(self._continuation_question)
 
