@@ -1,0 +1,33 @@
+[project]
+name = "agents-meeting"
+version = "0.1.0"
+description = "Système de réunion multi-agents avec confrontation de points de vue"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "textual>=0.52.0",
+    "pydantic>=2.5.0",
+    "pyyaml>=6.0",
+    "aiohttp>=3.9.0",
+    "openai>=1.10.0",
+    "anthropic>=0.18.0",
+    "httpx>=0.26.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.2.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.textual]
+fonts = []
