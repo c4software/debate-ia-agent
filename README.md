@@ -1,10 +1,11 @@
-# Agents Meeting
+# Agents Meeting (Débat multi-agents avec IA)
 
 Système de débat multi-agents avec IA - Interface TUI.
 
 ## Description
 
 Agents Meeting permet de lancer des débats entre plusieurs agents IA sur un sujet donné. Un agent "leader" modère le débat en :
+
 - Présentant le sujet initial
 - Faisant des interventions de synthèse entre les tours
 - Posant des questions affinées pour approfondir le débat
@@ -50,19 +51,20 @@ python -m src.main agents-meeting.yaml --prompt "Votre question ici"
 
 ## Raccourcis clavier (mode TUI)
 
-| Touche | Action | Disponibilité |
-|--------|--------|---------------|
-| `Entrée` | Démarrer le débat | Écran d'accueil |
-| `Échap` | Arrêter le débat en cours | Pendant le débat |
-| `m` | Afficher / masquer la zone modérateur | Pendant / après le débat |
-| `w` | Sauvegarder la conversation en Markdown | Pendant / après le débat |
-| `c` | Continuer avec une nouvelle question | Après la fin du débat |
-| `r` | Nouvelle question (retour à l'accueil) | Pendant / après le débat |
-| `q` | Quitter | Partout |
+| Touche   | Action                                  | Disponibilité            |
+| -------- | --------------------------------------- | ------------------------ |
+| `Entrée` | Démarrer le débat                       | Écran d'accueil          |
+| `Échap`  | Arrêter le débat en cours               | Pendant le débat         |
+| `m`      | Afficher / masquer la zone modérateur   | Pendant / après le débat |
+| `w`      | Sauvegarder la conversation en Markdown | Pendant / après le débat |
+| `c`      | Continuer avec une nouvelle question    | Après la fin du débat    |
+| `r`      | Nouvelle question (retour à l'accueil)  | Pendant / après le débat |
+| `q`      | Quitter                                 | Partout                  |
 
 ## Sauvegarde de la conversation
 
 Appuyer sur `w` pendant ou après le débat génère un fichier Markdown contenant :
+
 - Les interventions du modérateur (ouverture, synthèses par tour, conclusion)
 - Les réponses de chaque agent par tour
 
@@ -99,8 +101,8 @@ agents:
     model: "gpt-4o"
     temperature: 0.7
     max_tokens: 2000
-    api_key: "env:MON_API_KEY"  # Optionnel, prioritaire sur api_keys global
-    base_url: "https://api.example.com"  # Optionnel
+    api_key: "env:MON_API_KEY" # Optionnel, prioritaire sur api_keys global
+    base_url: "https://api.example.com" # Optionnel
     is_leader: true
 
 debate:
@@ -114,50 +116,50 @@ debate:
 
 #### Top-level
 
-| Paramètre | Type | Description |
-|-----------|------|-------------|
-| `title` | string | Titre de la réunion |
+| Paramètre | Type   | Description         |
+| --------- | ------ | ------------------- |
+| `title`   | string | Titre de la réunion |
 
 #### api_keys
 
-| Paramètre | Type | Description |
-|-----------|------|-------------|
-| `openai` | string | Clé API OpenAI (ou `env:VARIABLE`) |
+| Paramètre   | Type   | Description                           |
+| ----------- | ------ | ------------------------------------- |
+| `openai`    | string | Clé API OpenAI (ou `env:VARIABLE`)    |
 | `anthropic` | string | Clé API Anthropic (ou `env:VARIABLE`) |
-| `ollama` | string | URL du serveur Ollama |
-| `custom` | string | Clé API custom (ou `env:VARIABLE`) |
+| `ollama`    | string | URL du serveur Ollama                 |
+| `custom`    | string | Clé API custom (ou `env:VARIABLE`)    |
 
 #### agents[]
 
-| Paramètre | Type | Description | Défaut |
-|-----------|------|-------------|--------|
-| `name` | string | Nom de l'agent | - |
-| `role` | string | Rôle/description de l'agent | - |
-| `provider` | string | `openai`, `anthropic`, `ollama`, `custom` | - |
-| `model` | string | Modèle à utiliser | `gpt-4o` |
-| `temperature` | float | Température (0.0-2.0) | 0.7 |
-| `max_tokens` | int | Limite de tokens | - |
-| `api_key` | string | Clé API locale (ou `env:VARIABLE`) | - |
-| `base_url` | string | URL de l'API (remplace la valeur par défaut) | - |
-| `is_leader` | boolean | Agent leader/modérateur | `false` |
+| Paramètre     | Type    | Description                                  | Défaut   |
+| ------------- | ------- | -------------------------------------------- | -------- |
+| `name`        | string  | Nom de l'agent                               | -        |
+| `role`        | string  | Rôle/description de l'agent                  | -        |
+| `provider`    | string  | `openai`, `anthropic`, `ollama`, `custom`    | -        |
+| `model`       | string  | Modèle à utiliser                            | `gpt-4o` |
+| `temperature` | float   | Température (0.0-2.0)                        | 0.7      |
+| `max_tokens`  | int     | Limite de tokens                             | -        |
+| `api_key`     | string  | Clé API locale (ou `env:VARIABLE`)           | -        |
+| `base_url`    | string  | URL de l'API (remplace la valeur par défaut) | -        |
+| `is_leader`   | boolean | Agent leader/modérateur                      | `false`  |
 
 #### debate
 
-| Paramètre | Type | Description | Défaut |
-|-----------|------|-------------|--------|
-| `rounds` | int | Nombre de tours (1-10) | 2 |
-| `initial_prompt` | string | Question/prompt initial | - |
-| `system_prompt` | string | System prompt global | - |
-| `leader_prompt` | string | Instructions pour le leader | - |
+| Paramètre        | Type   | Description                 | Défaut |
+| ---------------- | ------ | --------------------------- | ------ |
+| `rounds`         | int    | Nombre de tours (1-10)      | 2      |
+| `initial_prompt` | string | Question/prompt initial     | -      |
+| `system_prompt`  | string | System prompt global        | -      |
+| `leader_prompt`  | string | Instructions pour le leader | -      |
 
 ## Providers
 
-| Provider | Modèles disponibles |
-|----------|---------------------|
-| OpenAI | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc. |
-| Anthropic | `claude-3-5-sonnet-*`, `claude-3-opus-*`, etc. |
-| Ollama | Modèles locaux (`llama2`, `mistral`, `phi3`, etc.) |
-| Custom | API compatible OpenAI |
+| Provider  | Modèles disponibles                                |
+| --------- | -------------------------------------------------- |
+| OpenAI    | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc.           |
+| Anthropic | `claude-3-5-sonnet-*`, `claude-3-opus-*`, etc.     |
+| Ollama    | Modèles locaux (`llama2`, `mistral`, `phi3`, etc.) |
+| Custom    | API compatible OpenAI                              |
 
 ### Ollama (local)
 
@@ -229,4 +231,3 @@ Ou directement dans le fichier YAML avec le préfixe `env:` :
 api_keys:
   openai: "env:OPENAI_API_KEY"
 ```
-# debate-ia-agent

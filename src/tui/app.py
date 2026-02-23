@@ -458,9 +458,9 @@ class ContinueScreen(Screen):
     }
     """
 
-    def __init__(self, suggested_question: str = "", **kwargs):
+    def __init__(self, loading: bool = False, **kwargs):
         super().__init__(**kwargs)
-        self._suggested = suggested_question
+        self._loading = loading
 
     def compose(self) -> ComposeResult:
         with Middle():
@@ -468,13 +468,14 @@ class ContinueScreen(Screen):
                 with Vertical(id="continue-box"):
                     yield Static("Continuer le débat", id="continue-title")
                     yield Static(
-                        "[dim]Le modérateur suggère :[/dim]",
+                        "[dim]Le modérateur prépare une question de suivi...[/dim]" if self._loading else "[dim]Le modérateur suggère :[/dim]",
                         id="continue-subtitle",
                     )
                     yield Input(
-                        value=self._suggested,
+                        value="",
                         placeholder="Question pour continuer le débat...",
                         id="continue-input",
+                        disabled=self._loading,
                     )
                     yield Static("", id="continue-error")
                     yield Static(
@@ -483,7 +484,18 @@ class ContinueScreen(Screen):
                     )
 
     def on_mount(self) -> None:
+        if not self._loading:
+            inp = self.query_one("#continue-input", Input)
+            inp.focus()
+            inp.cursor_position = len(inp.value)
+
+    def set_question(self, question: str) -> None:
+        """Met à jour la question une fois générée par le leader."""
+        self._loading = False
+        self.query_one("#continue-subtitle", Static).update("[dim]Le modérateur suggère :[/dim]")
         inp = self.query_one("#continue-input", Input)
+        inp.disabled = False
+        inp.value = question
         inp.focus()
         inp.cursor_position = len(inp.value)
 
@@ -602,6 +614,7 @@ class DebateScreen(Screen):
         self._debate_ended: bool = False
         self._current_phase_display: str = ""
         self._continuation_question: str = ""
+        self._continue_screen: ContinueScreen | None = None
 
     def compose(self) -> ComposeResult:
         yield Label(
@@ -806,17 +819,26 @@ class DebateScreen(Screen):
                 self.agent_cards[event.agent_name].set_content(event.phase, event.content or "")
                 self._scroll_to_bottom(event.agent_name)
 
-        elif event.type == "continuation_thinking":
-            status.update("[dim]Le modérateur prépare une question de suivi...[/dim]")
-
         elif event.type == "end":
             self._debate_ended = True
             elapsed = self._elapsed_str()
             elapsed_str = f" · {elapsed}" if elapsed else ""
             status.update(f"[green bold]Débat terminé !{elapsed_str}[/green bold]")
 
+        elif event.type == "continuation_thinking":
+            # Ouvrir immédiatement le dialogue en mode loading
+            screen = ContinueScreen(loading=True)
+            self._continue_screen = screen
+            self.app.push_screen(screen, self._on_continue_chosen)
+
         elif event.type == "continuation_suggestion":
             self._continuation_question = event.content or ""
+            # Mettre à jour le dialogue s'il est ouvert, sinon activer juste le binding
+            if self._continue_screen is not None:
+                try:
+                    self._continue_screen.set_question(self._continuation_question)
+                except Exception:
+                    pass
             # Rendre le binding "c" visible maintenant que le débat est terminé
             try:
                 self.app.refresh_bindings()
@@ -855,12 +877,16 @@ class DebateScreen(Screen):
     def action_continue_debate(self) -> None:
         if not self._debate_ended or self.debate_manager is None:
             return
-        self.app.push_screen(
-            ContinueScreen(suggested_question=self._continuation_question),
-            self._on_continue_chosen,
-        )
+        # Ouvrir un nouveau dialogue avec la question déjà disponible (fallback touche c)
+        screen = ContinueScreen(loading=False)
+        self._continue_screen = screen
+        self.app.push_screen(screen, self._on_continue_chosen)
+        # Mettre à jour la question immédiatement si disponible
+        if self._continuation_question:
+            screen.set_question(self._continuation_question)
 
     def _on_continue_chosen(self, question: str | None) -> None:
+        self._continue_screen = None
         if not question or self.debate_manager is None:
             return
 
@@ -870,6 +896,7 @@ class DebateScreen(Screen):
         # Reset de l'état TUI
         self._debate_ended = False
         self._continuation_question = ""
+        self._continue_screen = None
         self._leader_history = ""
         self._leader_streaming = ""
         self._leader_history_dirty = False
