@@ -1,4 +1,4 @@
-"""Module TUI."""
+"""TUI module."""
 
 from .app import AgentsMeetingApp
 

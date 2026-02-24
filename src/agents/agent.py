@@ -1,4 +1,4 @@
-"""Agents pour agents-meeting."""
+"""Agents for agents-meeting."""
 
 import asyncio
 from dataclasses import dataclass, field
@@ -17,7 +17,7 @@ from src.providers import (
 
 @dataclass
 class Turn:
-    """Un tour de parole d'un agent."""
+    """A turn of speech for an agent."""
     round: int
     phase: str
     content: str
@@ -26,7 +26,7 @@ class Turn:
 
 @dataclass
 class Agent:
-    """Représente un agent dans le débat."""
+    """Represents an agent in the debate."""
     config: AgentConfig
     global_api_keys: APIKeysConfig | None = None
     provider: LLMProvider = field(init=False)
@@ -76,18 +76,20 @@ class Agent:
                 **extra,
             )
         else:
-            raise ValueError(f"Provider inconnu: {self.config.provider}")
+            raise ValueError(f"Unknown provider: {self.config.provider}")
 
     def build_system_prompt(
         self,
         global_system: str | None = None,
         leader_prompt: str | None = None,
+        identity_template: str | None = None,
     ) -> str:
-        """Construit le system prompt pour l'agent."""
+        """Build the system prompt for the agent."""
         parts = []
         if global_system:
             parts.append(global_system)
-        parts.append(f"Tu es {self.config.name}. {self.config.role}")
+        template = identity_template or "You are {name}. {role}"
+        parts.append(template.format(name=self.config.name, role=self.config.role))
         if leader_prompt:
             parts.append(leader_prompt)
         return "\n\n".join(parts)
@@ -98,24 +100,27 @@ class Agent:
         context: str | None = None,
         system_prompt: str | None = None,
         leader_prompt: str | None = None,
+        identity_template: str | None = None,
+        context_template: str | None = None,
     ) -> str:
-        """L'agent réfléchit et répond au prompt."""
-        system = self.build_system_prompt(system_prompt, leader_prompt)
-        
+        """The agent thinks and responds to the prompt."""
+        system = self.build_system_prompt(system_prompt, leader_prompt, identity_template)
+
         user_content = prompt
         if context:
-            user_content = f"Contexte des autres agents:\n{context}\n\nQuestion: {prompt}"
-        
+            tmpl = context_template or "Other agents' context:\n{context}\n\nQuestion: {prompt}"
+            user_content = tmpl.format(context=context, prompt=prompt)
+
         messages = list(self.history) + [Message(role="user", content=user_content)]
-        
+
         response = await self.provider.chat(
             messages=messages,
             system_prompt=system,
         )
-        
+
         self.history.append(Message(role="user", content=user_content))
         self.history.append(Message(role="assistant", content=response.content))
-        
+
         return response.content
 
     async def think_stream(
@@ -124,16 +129,19 @@ class Agent:
         context: str | None = None,
         system_prompt: str | None = None,
         leader_prompt: str | None = None,
+        identity_template: str | None = None,
+        context_template: str | None = None,
     ) -> AsyncGenerator[str, None]:
-        """Version streaming de think."""
-        system = self.build_system_prompt(system_prompt, leader_prompt)
-        
+        """Streaming version of think."""
+        system = self.build_system_prompt(system_prompt, leader_prompt, identity_template)
+
         user_content = prompt
         if context:
-            user_content = f"Contexte des autres agents:\n{context}\n\nQuestion: {prompt}"
-        
+            tmpl = context_template or "Other agents' context:\n{context}\n\nQuestion: {prompt}"
+            user_content = tmpl.format(context=context, prompt=prompt)
+
         messages = list(self.history) + [Message(role="user", content=user_content)]
-        
+
         full_content = ""
         async for chunk in self.provider.chat_stream(
             messages=messages,
@@ -141,7 +149,7 @@ class Agent:
         ):
             full_content += chunk
             yield chunk
-        
+
         self.history.append(Message(role="user", content=user_content))
         self.history.append(Message(role="assistant", content=full_content))
 
@@ -151,9 +159,9 @@ class Agent:
         other_agents_responses: dict[str, str],
         system_prompt: str | None = None,
     ) -> str:
-        """L'agent réagit aux réponses des autres agents."""
+        """The agent reacts to other agents' responses."""
         context_lines = [
-            f"### Réponse de {name}:"
+            f"### Response from {name}:"
             for name in other_agents_responses.keys()
         ]
         context_lines.append("")
@@ -164,7 +172,7 @@ class Agent:
         return await self.think(prompt, context=context, system_prompt=system_prompt)
 
     async def close(self) -> None:
-        """Ferme les ressources de l'agent."""
+        """Close the agent's resources."""
         await self.provider.close()
 
     def __repr__(self) -> str:

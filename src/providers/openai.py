@@ -1,4 +1,4 @@
-"""Provider OpenAI."""
+"""OpenAI provider."""
 
 import os
 from typing import Any, AsyncGenerator
@@ -9,7 +9,7 @@ from .base import LLMProvider, Message, Response
 
 
 class OpenAIProvider(LLMProvider):
-    """Provider pour l'API OpenAI."""
+    """Provider for OpenAI API."""
 
     def __init__(
         self,

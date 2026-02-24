@@ -1,4 +1,4 @@
-"""Interface TUI pour agents-meeting."""
+"""TUI interface for agents-meeting."""
 
 import time
 from datetime import datetime
@@ -16,11 +16,11 @@ from src.config import MeetingConfig
 
 
 # ---------------------------------------------------------------------------
-# Widget sélecteur de tours
+# Round picker widget
 # ---------------------------------------------------------------------------
 
 class RoundPicker(Widget):
-    """Ligne de chiffres 1–10 cliquables. Le chiffre actif est mis en évidence."""
+    """Clickable 1-10 number line. The active number is highlighted."""
 
     value: reactive[int] = reactive(2)
 
@@ -62,7 +62,7 @@ class RoundPicker(Widget):
             yield Static(str(n), id=f"round-{n}", classes=classes)
 
     def watch_value(self, new_value: int) -> None:
-        """Met à jour les classes CSS quand la valeur change."""
+        """Update CSS classes when value changes."""
         for n in range(1, 11):
             try:
                 btn = self.query_one(f"#round-{n}", Static)
@@ -74,8 +74,8 @@ class RoundPicker(Widget):
                 pass
 
     def on_click(self, event) -> None:
-        """Détecte le clic sur un chiffre."""
-        # Remonter jusqu'au Static qui a l'id round-N
+        """Detect click on a number."""
+        # Go up to the Static with id round-N
         widget = event.widget if hasattr(event, "widget") else None
         if widget is None:
             return
@@ -88,15 +88,15 @@ class RoundPicker(Widget):
 
 
 # ---------------------------------------------------------------------------
-# Écran d'accueil centré (style OpenCode / Claude Code)
+# Centered welcome screen (OpenCode / Claude Code style)
 # ---------------------------------------------------------------------------
 
 class WelcomeScreen(Screen):
-    """Écran plein écran avec la question centrée, affiché au lancement."""
+    """Full-screen centered question display, shown at launch."""
 
     BINDINGS = [
-        Binding("enter", "start", "Démarrer", show=True),
-        Binding("escape", "quit", "Quitter", show=True),
+        Binding("enter", "start", "Start", show=True),
+        Binding("escape", "quit", "Quit", show=True),
     ]
 
     CSS = """
@@ -171,23 +171,23 @@ class WelcomeScreen(Screen):
                         id="welcome-title",
                     )
                     yield Static(
-                        "Quelle question soumettre au débat ?",
+                        "What question to submit to the debate?",
                         id="welcome-subtitle",
                     )
                     yield Input(
                         value=self.config.debate.initial_prompt,
-                        placeholder="Entrez la question du débat...",
+                        placeholder="Enter the debate question...",
                         id="question-input",
                     )
                     with Horizontal(id="rounds-row"):
-                        yield Static("Tours :", id="rounds-label")
+                        yield Static("Rounds:", id="rounds-label")
                         yield RoundPicker(
                             initial=self.config.debate.rounds,
                             id="rounds-picker",
                         )
                     yield Static("", id="welcome-error")
                     yield Static(
-                        "[dim]Entrée pour démarrer · Échap pour quitter[/dim]",
+                        "[dim]Enter to start · Escape to quit[/dim]",
                         id="welcome-hint",
                     )
         yield Footer()
@@ -205,7 +205,7 @@ class WelcomeScreen(Screen):
 
         question = self.query_one("#question-input", Input).value.strip()
         if not question:
-            error.update("[red]La question ne peut pas être vide.[/red]")
+            error.update("[red]The question cannot be empty.[/red]")
             self.query_one("#question-input", Input).focus()
             return
 
@@ -225,7 +225,7 @@ class WelcomeScreen(Screen):
 # ---------------------------------------------------------------------------
 
 class AgentCard(Widget):
-    """Carte d'un agent avec sa réponse en Markdown."""
+    """Card for an agent with their Markdown response."""
 
     can_focus = False
 
@@ -283,7 +283,7 @@ class AgentCard(Widget):
         self._phase = phase
         self._current_content = ""
         self._dirty = False
-        self._body().update("*Réfléchit...*")
+        self._body().update("*Thinking...*")
 
     def set_content(self, phase: str, content: str) -> None:
         self._phase = phase
@@ -297,14 +297,14 @@ class AgentCard(Widget):
 
 
 # ---------------------------------------------------------------------------
-# Écran de saisie du nom de fichier
+# File name input screen
 # ---------------------------------------------------------------------------
 
 class FilenameScreen(Screen):
-    """Modale de saisie du nom de fichier pour la sauvegarde."""
+    """Modal for entering the save file name."""
 
     BINDINGS = [
-        Binding("escape", "cancel", "Annuler", show=True),
+        Binding("escape", "cancel", "Cancel", show=True),
     ]
 
     CSS = """
@@ -355,7 +355,7 @@ class FilenameScreen(Screen):
         with Middle():
             with Center():
                 with Vertical(id="filename-box"):
-                    yield Static("Nom du fichier de sauvegarde", id="filename-title")
+                    yield Static("Save file name", id="filename-title")
                     yield Input(
                         value=self._default_name,
                         placeholder="nom-du-fichier.md",
@@ -363,7 +363,7 @@ class FilenameScreen(Screen):
                     )
                     yield Static("", id="filename-error")
                     yield Static(
-                        "[dim]Entrée pour confirmer · Échap pour annuler[/dim]",
+                        "[dim]Enter to confirm · Escape to cancel[/dim]",
                         id="filename-hint",
                     )
 
@@ -379,7 +379,7 @@ class FilenameScreen(Screen):
         filename = self.query_one("#filename-input", Input).value.strip()
         if not filename:
             self.query_one("#filename-error", Static).update(
-                "[red]Le nom de fichier ne peut pas être vide.[/red]"
+                "[red]The file name cannot be empty.[/red]"
             )
             return
         if not filename.endswith(".md"):
@@ -395,7 +395,7 @@ class FilenameScreen(Screen):
 # ---------------------------------------------------------------------------
 
 class DebateEventMessage(Message):
-    """Message Textual transportant un DebateEvent."""
+    """Textual message transporting a DebateEvent."""
 
     def __init__(self, event: DebateEvent):
         super().__init__()
@@ -403,14 +403,14 @@ class DebateEventMessage(Message):
 
 
 # ---------------------------------------------------------------------------
-# Écran de continuation du débat
+# Debate continuation screen
 # ---------------------------------------------------------------------------
 
 class ContinueScreen(Screen):
-    """Modale de saisie de la question de continuation proposée par le leader."""
+    """Modal for entering the continuation question proposed by the leader."""
 
     BINDINGS = [
-        Binding("escape", "cancel", "Annuler", show=True),
+        Binding("escape", "cancel", "Cancel", show=True),
     ]
 
     CSS = """
@@ -466,20 +466,20 @@ class ContinueScreen(Screen):
         with Middle():
             with Center():
                 with Vertical(id="continue-box"):
-                    yield Static("Continuer le débat", id="continue-title")
+                    yield Static("Continue the debate", id="continue-title")
                     yield Static(
-                        "[dim]Le modérateur prépare une question de suivi...[/dim]" if self._loading else "[dim]Le modérateur suggère :[/dim]",
+                        "[dim]The moderator is preparing a follow-up question...[/dim]" if self._loading else "[dim]The moderator suggests:[/dim]",
                         id="continue-subtitle",
                     )
                     yield Input(
                         value="",
-                        placeholder="Question pour continuer le débat...",
+                        placeholder="Question to continue the debate...",
                         id="continue-input",
                         disabled=self._loading,
                     )
                     yield Static("", id="continue-error")
                     yield Static(
-                        "[dim]Entrée pour confirmer · Échap pour annuler[/dim]",
+                        "[dim]Enter to confirm · Escape to cancel[/dim]",
                         id="continue-hint",
                     )
 
@@ -490,9 +490,9 @@ class ContinueScreen(Screen):
             inp.cursor_position = len(inp.value)
 
     def set_question(self, question: str) -> None:
-        """Met à jour la question une fois générée par le leader."""
+        """Update the question once generated by the leader."""
         self._loading = False
-        self.query_one("#continue-subtitle", Static).update("[dim]Le modérateur suggère :[/dim]")
+        self.query_one("#continue-subtitle", Static).update("[dim]The moderator suggests:[/dim]")
         inp = self.query_one("#continue-input", Input)
         inp.disabled = False
         inp.value = question
@@ -506,7 +506,7 @@ class ContinueScreen(Screen):
         question = self.query_one("#continue-input", Input).value.strip()
         if not question:
             self.query_one("#continue-error", Static).update(
-                "[red]La question ne peut pas être vide.[/red]"
+                "[red]The question cannot be empty.[/red]"
             )
             return
         self.dismiss(question)
@@ -516,15 +516,15 @@ class ContinueScreen(Screen):
 
 
 # ---------------------------------------------------------------------------
-# Écran de débat
+# Debate screen
 # ---------------------------------------------------------------------------
 
 class DebateScreen(Screen):
-    """Écran principal du débat — affiché après validation de la question."""
+    """Main debate screen — shown after question validation."""
 
     BINDINGS = [
-        Binding("escape", "stop_debate", "Arrêter", show=True, priority=True),
-        Binding("c", "continue_debate", "Continuer", show=False),
+        Binding("escape", "stop_debate", "Stop", show=True, priority=True),
+        Binding("c", "continue_debate", "Continue", show=True),
     ]
 
     CSS = """
@@ -544,6 +544,13 @@ class DebateScreen(Screen):
         text-wrap: wrap;
         max-height: 3;
         overflow-y: auto;
+    }
+
+    #continue-hint {
+        display: none;
+        text-align: center;
+        padding: 0 2;
+        color: $success;
     }
 
     #agents_columns {
@@ -609,7 +616,7 @@ class DebateScreen(Screen):
         self._agent_container: dict[str, str] = {}
         self._scroll_pending: set[str] = set()
         self._user_scrolled_up: set[str] = set()
-        # Chronomètre
+        # Stopwatch
         self._start_time: float | None = None
         self._debate_ended: bool = False
         self._current_phase_display: str = ""
@@ -625,6 +632,7 @@ class DebateScreen(Screen):
             f"[dim]{self.config.debate.initial_prompt}[/dim]",
             id="question-banner",
         )
+        yield Label("", id="continue-hint")
 
         non_leaders = [a for a in self.config.agents if not a.is_leader]
         left_agents = non_leaders[0::2]
@@ -675,7 +683,7 @@ class DebateScreen(Screen):
                     yield leader_card
 
         with Horizontal(id="status_bar"):
-            yield Label("[yellow]Initialisation...[/yellow]", id="status")
+            yield Label("[yellow]Initializing...[/yellow]", id="status")
 
         yield Footer()
 
@@ -684,7 +692,7 @@ class DebateScreen(Screen):
         self.start_debate()
 
     async def on_unmount(self) -> None:
-        """Nettoie le debate_manager si l'écran est quitté avant la fin."""
+        """Clean up debate_manager if screen is exited before end."""
         if self.debate_manager is not None:
             try:
                 await self.debate_manager.cleanup()
@@ -717,18 +725,18 @@ class DebateScreen(Screen):
         return f"{minutes:02d}:{seconds:02d}"
 
     def _flush_tick(self) -> None:
-        # Mettre à jour le chronomètre dans la status bar si le débat est en cours
+        # Update the stopwatch in the status bar if debate is in progress
         if self._start_time is not None and not self._debate_ended:
             try:
                 status = self.query_one("#status", Label)
                 elapsed = self._elapsed_str()
-                round_info = f"Tour {self._current_round}/{self._total_rounds}" if self._current_round > 0 else "Intro"
+                round_info = f"Round {self._current_round}/{self._total_rounds}" if self._current_round > 0 else "Intro"
                 phase_display = self._current_phase_display
                 status.update(f"[cyan]{round_info} · {phase_display} · {elapsed}[/cyan]")
             except Exception:
                 pass
 
-        # Flush agents non-leader
+        # Flush non-leader agents
         for name, card in self.agent_cards.items():
             if name != self.leader_name:
                 card.flush_render()
@@ -777,7 +785,7 @@ class DebateScreen(Screen):
                         card.reset()
 
         elif event.type == "leader_section_start":
-            if self._leader_streaming and self._leader_streaming != "*Réfléchit...*":
+            if self._leader_streaming and self._leader_streaming != "*Thinking...*":
                 self._leader_history += self._leader_streaming
             self._leader_streaming = ""
             header = event.content or ""
@@ -789,11 +797,11 @@ class DebateScreen(Screen):
             self._update_leader_display()
 
         elif event.type == "leader_thinking":
-            self._leader_streaming = "*Réfléchit...*"
+            self._leader_streaming = "*Thinking...*"
             self._update_leader_display()
 
         elif event.type == "leader_streaming":
-            if self._leader_streaming == "*Réfléchit...*":
+            if self._leader_streaming == "*Thinking...*":
                 self._leader_streaming = ""
             self._leader_streaming += event.content or ""
             self._update_leader_display()
@@ -823,20 +831,26 @@ class DebateScreen(Screen):
             self._debate_ended = True
             elapsed = self._elapsed_str()
             elapsed_str = f" · {elapsed}" if elapsed else ""
-            status.update(f"[green bold]Débat terminé !{elapsed_str}[/green bold]")
+            status.update(f"[green bold]Debate ended!{elapsed_str}[/green bold]")
 
         elif event.type == "continuation_thinking":
-            pass  # L'ouverture du dialogue se fait manuellement via la touche c
+            pass  # Dialog opening is done manually via the c key
 
         elif event.type == "continuation_suggestion":
             self._continuation_question = event.content or ""
-            # Mettre à jour le dialogue s'il est ouvert, sinon activer juste le binding
+            # Update the dialog if it's already open
             if self._continue_screen is not None:
                 try:
                     self._continue_screen.set_question(self._continuation_question)
                 except Exception:
                     pass
-            # Rendre le binding "c" visible maintenant que le débat est terminé
+            # Show the hint banner and activate the "c" binding in the footer
+            try:
+                hint = self.query_one("#continue-hint", Label)
+                hint.update("Debate ended — press [bold]c[/bold] to continue with the suggested question")
+                hint.display = True
+            except Exception:
+                pass
             try:
                 self.app.refresh_bindings()
             except Exception:
@@ -844,7 +858,7 @@ class DebateScreen(Screen):
 
     def save_debate(self) -> None:
         if self.debate_manager is None:
-            self.query_one("#status", Label).update("[red]Aucun débat en cours.[/red]")
+            self.query_one("#status", Label).update("[red]No debate in progress.[/red]")
             return
         default = datetime.now().strftime("debate_%Y-%m-%d_%H-%M.md")
         self.app.push_screen(FilenameScreen(default_name=default), self._on_filename_chosen)
@@ -857,16 +871,16 @@ class DebateScreen(Screen):
     def _do_save(self, path: str) -> None:
         try:
             saved = self.debate_manager.save(path)  # type: ignore[union-attr]
-            self.query_one("#status", Label).update(f"[green]Sauvegardé : {saved}[/green]")
+            self.query_one("#status", Label).update(f"[green]Saved: {saved}[/green]")
         except Exception as e:
-            self.query_one("#status", Label).update(f"[red]Erreur sauvegarde : {e}[/red]")
+            self.query_one("#status", Label).update(f"[red]Save error: {e}[/red]")
 
     def action_toggle_leader(self) -> None:
         leader_scroll = self.query_one("#leader_scroll")
         leader_scroll.display = not leader_scroll.display
 
     def check_action(self, action: str, parameters: tuple) -> bool | None:
-        """Désactive l'action 'continue_debate' tant que le débat n'est pas terminé."""
+        """Disable 'continue_debate' action until the debate is finished."""
         if action == "continue_debate":
             return self._debate_ended
         return True
@@ -886,10 +900,10 @@ class DebateScreen(Screen):
         if not question or self.debate_manager is None:
             return
 
-        # Préparer la continuation dans le manager
+        # Prepare continuation in the manager
         self.debate_manager.continue_with(question)
 
-        # Reset de l'état TUI
+        # Reset TUI state
         self._debate_ended = False
         self._continuation_question = ""
         self._continue_screen = None
@@ -899,7 +913,7 @@ class DebateScreen(Screen):
         self._current_round = 0
         self._start_time = None
 
-        # Mettre à jour le bandeau de question
+        # Update question banner
         try:
             self.query_one("#question-banner", Label).update(
                 f"[dim]{question}[/dim]"
@@ -907,27 +921,33 @@ class DebateScreen(Screen):
         except Exception:
             pass
 
-        # Reset des cartes agents non-leader
+        # Hide the continuation hint
+        try:
+            self.query_one("#continue-hint", Label).display = False
+        except Exception:
+            pass
+
+        # Reset non-leader agent cards
         for name, card in self.agent_cards.items():
             if name != self.leader_name:
                 card.reset()
 
-        # Rafraîchir les bindings
+        # Refresh bindings
         try:
             self.app.refresh_bindings()
         except Exception:
             pass
 
-        # Relancer le débat
+        # Restart the debate
         self.start_debate()
 
     def action_stop_debate(self) -> None:
-        """Arrête le débat en cours et revient à l'écran d'accueil."""
+        """Stop the current debate and return to the welcome screen."""
         if self.debate_manager is None:
             return
         self.debate_manager.cancel()
         status = self.query_one("#status", Label)
-        status.update("[yellow]Arrêt en cours...[/yellow]")
+        status.update("[yellow]Stopping...[/yellow]")
 
     @work(exclusive=True, thread=False)
     async def start_debate(self) -> None:
@@ -936,13 +956,13 @@ class DebateScreen(Screen):
         def on_event(event: DebateEvent) -> None:
             self.post_message(DebateEventMessage(event))
 
-        # Si un manager existe déjà (continuation), on le réutilise
+        # If a manager already exists (continuation), reuse it
         if self.debate_manager is None:
             self.debate_manager = DebateManager(self.config, on_event=on_event)
             self._total_rounds = self.config.debate.rounds
             await self.debate_manager.initialize()
         else:
-            # Continuation : réattacher le callback et mettre à jour le total de tours
+            # Continuation: reattach callback and update total rounds
             self.debate_manager.on_event = on_event
             self._total_rounds = self.config.debate.rounds
 
@@ -953,25 +973,25 @@ class DebateScreen(Screen):
         finally:
             if self.debate_manager.is_cancelled:
                 try:
-                    self.query_one("#status", Label).update("[yellow]Débat arrêté.[/yellow]")
+                    self.query_one("#status", Label).update("[yellow]Debate stopped.[/yellow]")
                     self._debate_ended = True
                 except Exception:
                     pass
 
 
 # ---------------------------------------------------------------------------
-# Application principale
+# Main application
 # ---------------------------------------------------------------------------
 
 class AgentsMeetingApp(App):
-    """Application principale."""
+    """Main application."""
 
     BINDINGS = [
-        Binding("q", "quit", "Quitter", show=True),
-        Binding("m", "toggle_leader", "Modérateur", show=True),
-        Binding("w", "save_debate", "Sauvegarder", show=True),
-        Binding("c", "continue_debate", "Continuer", show=True),
-        Binding("r", "new_question", "Nouvelle question", show=True),
+        Binding("q", "quit", "Quit", show=True),
+        Binding("m", "toggle_leader", "Moderator", show=True),
+        Binding("w", "save_debate", "Save", show=True),
+        Binding("c", "continue_debate", "Continue", show=True),
+        Binding("r", "new_question", "New question", show=True),
     ]
 
     def __init__(self, config: MeetingConfig):
@@ -982,9 +1002,9 @@ class AgentsMeetingApp(App):
         self.push_screen(WelcomeScreen(self.config))
 
     def compose(self) -> ComposeResult:
-        # Fond vide — les écrans sont gérés par push_screen / switch_screen
+        # Empty background — screens are managed by push_screen / switch_screen
         return
-        yield  # satisfaire mypy
+        yield  # satisfy mypy
 
     def action_toggle_leader(self) -> None:
         screen = self.screen
@@ -1007,12 +1027,12 @@ class AgentsMeetingApp(App):
             screen.save_debate()
 
     def action_new_question(self) -> None:
-        """Revenir à l'écran d'accueil pour éditer la question et relancer."""
+        """Return to welcome screen to edit question and restart."""
         screen = self.screen
         if isinstance(screen, DebateScreen):
             self.switch_screen(WelcomeScreen(self.config))
         elif isinstance(screen, WelcomeScreen):
-            # Déjà sur l'écran d'accueil, juste remettre le focus sur l'input
+            # Already on welcome screen, just refocus the input
             try:
                 inp = screen.query_one("#question-input", Input)
                 inp.focus()

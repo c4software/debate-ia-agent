@@ -1,4 +1,4 @@
-"""Base classes pour les providers LLM."""
+"""Base classes for LLM providers."""
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -7,7 +7,7 @@ from typing import Any, AsyncGenerator, Coroutine, TypeVar
 
 @dataclass
 class Message:
-    """Représente un message dans une conversation."""
+    """Represents a message in a conversation."""
     role: str
     content: str
     name: str | None = None
@@ -15,7 +15,7 @@ class Message:
 
 @dataclass
 class Response:
-    """Représente une réponse d'un provider LLM."""
+    """Represents a response from an LLM provider."""
     content: str
     model: str
     raw_response: Any = None
@@ -23,7 +23,7 @@ class Response:
 
 
 class LLMProvider(ABC):
-    """Classe de base pour tous les providers LLM."""
+    """Base class for all LLM providers."""
 
     def __init__(
         self,
@@ -43,7 +43,7 @@ class LLMProvider(ABC):
         messages: list[Message],
         system_prompt: str | None = None,
     ) -> Response:
-        """Envoie une requête de chat et retourne la réponse."""
+        """Send a chat request and return the response."""
         pass
 
     @abstractmethod
@@ -52,12 +52,12 @@ class LLMProvider(ABC):
         messages: list[Message],
         system_prompt: str | None = None,
     ) -> "AsyncGenerator[str, None]":
-        """Version streaming de chat."""
+        """Streaming version of chat."""
         pass
 
     @abstractmethod
     async def close(self) -> None:
-        """Ferme les connexions si nécessaire."""
+        """Close connections if necessary."""
         pass
 
     def build_messages(
@@ -65,7 +65,7 @@ class LLMProvider(ABC):
         user_prompt: str,
         history: list[Message] | None = None,
     ) -> list[Message]:
-        """Construit la liste des messages pour l'API."""
+        """Build the list of messages for the API."""
         msgs = []
         if history:
             msgs.extend(history)

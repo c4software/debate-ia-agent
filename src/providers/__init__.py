@@ -1,4 +1,4 @@
-"""Providers LLM pour agents-meeting."""
+"""LLM providers for agents-meeting."""
 
 from .base import LLMProvider, Message, Response
 from .openai import OpenAIProvider

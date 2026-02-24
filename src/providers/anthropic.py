@@ -1,4 +1,4 @@
-"""Provider Anthropic."""
+"""Anthropic provider."""
 
 import os
 from typing import Any, AsyncGenerator
@@ -9,7 +9,7 @@ from .base import LLMProvider, Message, Response
 
 
 class AnthropicProvider(LLMProvider):
-    """Provider pour l'API Anthropic (Claude)."""
+    """Provider for Anthropic API (Claude)."""
 
     def __init__(
         self,

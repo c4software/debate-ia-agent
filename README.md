@@ -46,9 +46,7 @@ python -m src.main agents-meeting.yaml --cli
 
 ### Créer un fichier de config
 
-```bash
-python -m src.main --create-config
-```
+Un fichier YAML d'exemple est fourni. Il suffit de le copier et de le modifier pour créer votre propre configuration.
 
 ### Modifier le prompt
 
@@ -289,9 +287,7 @@ python -m src.main agents-meeting.yaml --cli
 
 ### Create a config file
 
-```bash
-python -m src.main --create-config
-```
+Look at the example YAML file and create your own.
 
 ### Modify the prompt
 
@@ -301,15 +297,15 @@ python -m src.main agents-meeting.yaml --prompt "Your question here"
 
 ## Keyboard shortcuts (TUI mode)
 
-| Key       | Action                                      | Availability             |
-| --------- | ------------------------------------------ | ------------------------ |
-| `Enter`   | Start the debate                           | Welcome screen           |
-| `Esc`     | Stop the current debate                    | During debate            |
-| `m`       | Show/hide moderator zone                   | During/after debate      |
-| `w`       | Save conversation to Markdown              | During/after debate      |
-| `c`       | Continue with a new question               | After debate ends        |
-| `r`       | New question (return to welcome)           | During/after debate      |
-| `q`       | Quit                                        | Everywhere               |
+| Key     | Action                           | Availability        |
+| ------- | -------------------------------- | ------------------- |
+| `Enter` | Start the debate                 | Welcome screen      |
+| `Esc`   | Stop the current debate          | During debate       |
+| `m`     | Show/hide moderator zone         | During/after debate |
+| `w`     | Save conversation to Markdown    | During/after debate |
+| `c`     | Continue with a new question     | After debate ends   |
+| `r`     | New question (return to welcome) | During/after debate |
+| `q`     | Quit                             | Everywhere          |
 
 ## Conversation save
 
@@ -366,50 +362,50 @@ debate:
 
 #### Top-level
 
-| Parameter | Type   | Description        |
-| --------- | ------ | ------------------ |
-| `title`   | string | Meeting title      |
+| Parameter | Type   | Description   |
+| --------- | ------ | ------------- |
+| `title`   | string | Meeting title |
 
 #### api_keys
 
-| Parameter   | Type   | Description                          |
-| ----------- | ------ | ------------------------------------ |
-| `openai`    | string | OpenAI API key (or `env:VARIABLE`)  |
+| Parameter   | Type   | Description                           |
+| ----------- | ------ | ------------------------------------- |
+| `openai`    | string | OpenAI API key (or `env:VARIABLE`)    |
 | `anthropic` | string | Anthropic API key (or `env:VARIABLE`) |
-| `ollama`    | string | Ollama server URL                    |
-| `custom`    | string | Custom API key (or `env:VARIABLE`)  |
+| `ollama`    | string | Ollama server URL                     |
+| `custom`    | string | Custom API key (or `env:VARIABLE`)    |
 
 #### agents[]
 
-| Parameter     | Type    | Description                                   | Default   |
-| ------------- | ------- | --------------------------------------------- | -------- |
-| `name`        | string  | Agent name                                    | -        |
-| `role`        | string  | Role/description of the agent                 | -        |
-| `provider`    | string  | `openai`, `anthropic`, `ollama`, `custom`     | -        |
-| `model`       | string  | Model to use                                  | `gpt-4o` |
-| `temperature` | float   | Temperature (0.0-2.0)                         | 0.7      |
-| `max_tokens`  | int     | Token limit                                   | -        |
-| `api_key`     | string  | Local API key (or `env:VARIABLE`)             | -        |
-| `base_url`    | string  | API URL (replaces default value)              | -        |
-| `is_leader`   | boolean | Leader/moderator agent                       | `false`  |
+| Parameter     | Type    | Description                               | Default  |
+| ------------- | ------- | ----------------------------------------- | -------- |
+| `name`        | string  | Agent name                                | -        |
+| `role`        | string  | Role/description of the agent             | -        |
+| `provider`    | string  | `openai`, `anthropic`, `ollama`, `custom` | -        |
+| `model`       | string  | Model to use                              | `gpt-4o` |
+| `temperature` | float   | Temperature (0.0-2.0)                     | 0.7      |
+| `max_tokens`  | int     | Token limit                               | -        |
+| `api_key`     | string  | Local API key (or `env:VARIABLE`)         | -        |
+| `base_url`    | string  | API URL (replaces default value)          | -        |
+| `is_leader`   | boolean | Leader/moderator agent                    | `false`  |
 
 #### debate
 
-| Parameter        | Type   | Description                   | Default |
-| ---------------- | ------ | ----------------------------- | ------ |
-| `rounds`         | int    | Number of rounds (1-10)       | 2      |
-| `initial_prompt` | string | Initial question/prompt       | -      |
-| `system_prompt`  | string | Global system prompt          | -      |
-| `leader_prompt`  | string | Instructions for the leader   | -      |
+| Parameter        | Type   | Description                 | Default |
+| ---------------- | ------ | --------------------------- | ------- |
+| `rounds`         | int    | Number of rounds (1-10)     | 2       |
+| `initial_prompt` | string | Initial question/prompt     | -       |
+| `system_prompt`  | string | Global system prompt        | -       |
+| `leader_prompt`  | string | Instructions for the leader | -       |
 
 ## Providers
 
-| Provider  | Available models                                  |
-| --------- | -------------------------------------------------- |
-| OpenAI    | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc.          |
+| Provider  | Available models                                 |
+| --------- | ------------------------------------------------ |
+| OpenAI    | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc.         |
 | Anthropic | `claude-3-5-sonnet-*`, `claude-3-opus-*`, etc.   |
 | Ollama    | Local models (`llama2`, `mistral`, `phi3`, etc.) |
-| Custom    | OpenAI-compatible API                             |
+| Custom    | OpenAI-compatible API                            |
 
 ### Ollama (local)
 

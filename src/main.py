@@ -1,4 +1,4 @@
-"""Point d'entrée principal."""
+"""Main entry point."""
 
 import argparse
 import asyncio
@@ -13,64 +13,19 @@ from src.tui import AgentsMeetingApp
 
 
 def load_config(path: str | Path) -> MeetingConfig:
-    """Charge la configuration depuis un fichier YAML."""
+    """Load configuration from a YAML file."""
     with open(path) as f:
         data = yaml.safe_load(f)
     return MeetingConfig(**data)
 
 
-def create_sample_config() -> str:
-    """Génère un fichier de configuration d'exemple."""
-    return """title: "Discussion: L'IA va-t-elle transformer le travail ?"
-
-api_keys:
-  openai: "env:OPENAI_API_KEY"
-  anthropic: "env:ANTHROPIC_API_KEY"
-  custom: "env:CUSTOM_API_KEY"
-
-agents:
-  - name: "Modérateur"
-    role: "Anime le débat, synthétise et pose des questions de suivi"
-    provider: "openai"
-    model: "gpt-4o"
-    temperature: 0.5
-    is_leader: true
-
-  - name: "Sceptique"
-    role: "Remet en question les bénéfices de l'IA et souligne les risques"
-    provider: "openai"
-    model: "gpt-4o"
-    temperature: 0.8
-    is_leader: false
-
-  - name: "Pragmatique"
-    role: "Analyse les aspects pratiques et les contraintes réelles"
-    provider: "anthropic"
-    model: "claude-3-5-sonnet-20241022"
-    temperature: 0.5
-    is_leader: false
-
-  - name: "Optimiste"
-    role: "Voit les opportunités et le potentiel de l'IA"
-    provider: "anthropic"
-    model: "claude-3-5-sonnet-20241022"
-    temperature: 0.9
-    is_leader: false
-
-debate:
-  rounds: 2
-  initial_prompt: "Comment l'intelligence artificielle va-t-elle transformer le monde du travail dans les 10 prochaines années ?"
-  system_prompt: "Tu participes à un débat structuré. Sois concis et argumenté."
-  leader_prompt: "En tant que modérateur, assure-toi que tous les points de vue sont exprimés et synthétise régulièrement."
-"""
-
 
 async def run_cli(config: MeetingConfig) -> None:
-    """Lance le débat en mode CLI avec affichage temps réel."""
+    """Run the debate in CLI mode with real-time display."""
     from src.agents import DebateManager, DebateEvent
     
     print(f"\n{'='*60}")
-    print(f"  {config.title or 'Débat Multi-Agents'}")
+    print(f"  {config.title or 'Multi-Agent Debate'}")
     print(f"{'='*60}")
     print(f"\nQuestion: {config.debate.initial_prompt}\n")
     
@@ -80,14 +35,14 @@ async def run_cli(config: MeetingConfig) -> None:
             print(f"  Phase: {event.phase.upper()}")
             print(f"[{'='*40}]")
         elif event.type == "leader_thinking":
-            print(f"\n  💭 {event.agent_name} réfléchit...")
+            print(f"\n  💭 {event.agent_name} is thinking...")
         elif event.type == "agent_thinking":
-            print(f"\n  💭 {event.agent_name} réfléchit...")
+            print(f"\n  💭 {event.agent_name} is thinking...")
         elif event.type == "leader_speak" and event.content:
             print(f"\n🎤 {event.agent_name}:")
             print(f"   {event.content[:500]}")
         elif event.type == "leader_intervention" and event.content:
-            print(f"\n🔧 INTERVENTION DU MODÉRATEUR:")
+            print(f"\n🔧 MODERATOR INTERVENTION:")
             print(f"   {event.content[:500]}")
         elif event.type == "agent_speak" and event.content:
             print(f"\n💬 {event.agent_name}:")
@@ -96,7 +51,7 @@ async def run_cli(config: MeetingConfig) -> None:
             print(event.content, end="", flush=True)
         elif event.type == "end":
             print(f"\n{'='*60}")
-            print(f"  ✅ Débat terminé!")
+            print(f"  ✅ Debate ended!")
             print(f"{'='*60}\n")
     
     manager = DebateManager(config, on_event=on_event)
@@ -104,14 +59,14 @@ async def run_cli(config: MeetingConfig) -> None:
     await manager.run()
     await manager.cleanup()
 
-    # Proposer la sauvegarde
+    # Offer to save
     if config.output:
         path = manager.save(config.output)
-        print(f"\nConversation sauvegardée : {path}")
+        print(f"\nConversation saved: {path}")
     else:
         default = datetime.now().strftime("debate_%Y-%m-%d_%H-%M.md")
         try:
-            answer = input(f"\nNom du fichier de sauvegarde [{default}] : ").strip()
+            answer = input(f"\nSave file name [{default}] : ").strip()
         except (EOFError, KeyboardInterrupt):
             answer = ""
         if answer == "":
@@ -119,54 +74,39 @@ async def run_cli(config: MeetingConfig) -> None:
         if not answer.endswith(".md"):
             answer += ".md"
         path = manager.save(answer)
-        print(f"Conversation sauvegardée : {path}")
+        print(f"Conversation saved: {path}")
 
 
 async def run_tui(config: MeetingConfig) -> None:
-    """Lance l'application TUI."""
+    """Launch the TUI application."""
     app = AgentsMeetingApp(config)
     await app.run_async()
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Agents Meeting - Système de débat multi-agents")
+    parser = argparse.ArgumentParser(description="Agents Meeting - Multi-agent debate system")
     parser.add_argument(
         "config",
         nargs="?",
-        help="Chemin vers le fichier de configuration YAML",
-    )
-    parser.add_argument(
-        "--create-config",
-        action="store_true",
-        help="Crée un fichier de configuration d'exemple",
+        help="Path to the YAML configuration file",
     )
     parser.add_argument(
         "--prompt",
         type=str,
-        help="Prompt/direct question pour le débat (remplace la config)",
+        help="Prompt/direct question for the debate (replaces config)",
     )
     parser.add_argument(
         "--cli",
         action="store_true",
-        help="Mode CLI (sans interface TUI)",
+        help="CLI mode (without TUI)",
     )
     
     args = parser.parse_args()
 
-    if args.create_config:
-        config_path = Path("agents-meeting.yaml")
-        if config_path.exists():
-            print(f"Erreur: {config_path} existe déjà")
-            sys.exit(1)
-        with open(config_path, "w") as f:
-            f.write(create_sample_config())
-        print(f"Config créée: {config_path}")
-        sys.exit(0)
-
     if args.config:
         config = load_config(args.config)
     else:
-        print("Erreur: Fournissez un fichier de config ou utilisez --create-config")
+        print("Error: Provide a config file.")
         sys.exit(1)
 
     if args.prompt:

@@ -30,3 +30,54 @@ debate:
   initial_prompt: "L'IA va-t-elle remplacer les developpeurs ?"
   system_prompt: "Tu participes a un debat structure. Sois concis et argumente."
   leader_prompt: "En tant que moderateur, assure-toi que tous les points de vue sont exprimes."
+
+  intro_prompt: |
+    Tu es le moderateur d'un debat. Presente clairement le sujet suivant, cadre les enjeux
+    et pose les questions initiales auxquelles les participants doivent repondre :
+
+    SUJET : {initial_prompt}
+
+  moderator_context_prefix: "Le moderateur a dit :\n{content}"
+
+  round_header_template: "Tour {round_num} — Reponses des participants :"
+
+  intervention_prompt: >-
+    En tant que moderateur, fais la synthese des positions exprimees ce tour,
+    identifie les points de convergence et de divergence,
+    puis pose une question approfondie pour alimenter le debat au prochain tour.
+
+  intervention_last_prompt: >-
+    En tant que moderateur, fais une synthese complete des positions exprimees ce tour.
+    Identifie les points de convergence et de divergence.
+
+  conclusion_prompt: |
+    Question initiale : {initial_prompt}
+
+    Voici toutes les interventions des participants au fil des tours :
+
+    {turns}
+
+    En tant que moderateur, fais une synthese finale equilibree du debat :
+    resume les principales positions, les points d'accord et de desaccord,
+    et propose une conclusion generale.
+
+  continuation_prompt: |
+    Tu viens de moderer un debat sur le sujet : "{initial_prompt}".
+
+    Voici ta synthese finale :
+    {conclusion_text}
+
+    Propose une seule question de suivi courte et precise qui permettrait d'approfondir
+    ou d'elargir le debat. Reponds uniquement avec la question, sans introduction ni explication.
+
+  previous_debate_label: "[Synthese du debat precedent sur \"{initial_prompt}\"]"
+
+  previous_context_label: "[Contexte — debat precedent sur \"{initial_prompt}\"]"
+
+  agent_identity_template: "Tu es {name}. {role}"
+
+  agent_context_template: |
+    Contexte des autres agents :
+    {context}
+
+    Question : {prompt}

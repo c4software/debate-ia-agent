@@ -1,4 +1,4 @@
-"""Provider Ollama (local)."""
+"""Ollama provider (local)."""
 
 import json
 from typing import Any, AsyncGenerator
@@ -9,7 +9,7 @@ from .base import LLMProvider, Message, Response
 
 
 class OllamaProvider(LLMProvider):
-    """Provider pour Ollama (modèles LLM locaux)."""
+    """Provider for Ollama (local LLM models)."""
 
     def __init__(
         self,
@@ -70,7 +70,7 @@ class OllamaProvider(LLMProvider):
         messages: list[Message],
         system_prompt: str | None = None,
     ) -> "AsyncGenerator[str, None]":
-        """Version streaming de chat."""
+        """Streaming version of chat."""
         payload: dict[str, Any] = {
             "model": self.model,
             "messages": [],

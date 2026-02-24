@@ -1,4 +1,4 @@
-"""Module de configuration."""
+"""Configuration module."""
 
 from .models import AgentConfig, DebateConfig, MeetingConfig, APIKeysConfig
 

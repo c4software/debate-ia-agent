@@ -1,4 +1,4 @@
-"""Provider Custom pour API tierces."""
+"""Custom provider for third-party APIs."""
 
 from typing import Any, AsyncGenerator
 
@@ -8,7 +8,7 @@ from .base import LLMProvider, Message, Response
 
 
 class CustomProvider(LLMProvider):
-    """Provider flexible pour APIs LLM tierces (compatible OpenAI ou format personnalisé)."""
+    """Flexible provider for third-party LLM APIs (OpenAI-compatible or custom format)."""
 
     def __init__(
         self,

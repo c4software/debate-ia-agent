@@ -1,4 +1,4 @@
-"""Module agents."""
+"""Agents module."""
 
 from .agent import Agent, Turn
 from .debate import DebateManager, DebateEvent

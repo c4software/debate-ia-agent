@@ -39,3 +39,54 @@ debate:
   initial_prompt: "Comment l'intelligence artificielle va-t-elle transformer le monde du travail dans les 10 prochaines années ?"
   system_prompt: "Tu participes à un débat structuré. Sois concis et argumenté."
   leader_prompt: "En tant que modérateur, assure-toi que tous les points de vue sont exprimés et synthétise régulièrement."
+
+  intro_prompt: |
+    Tu es le modérateur d'un débat. Présente clairement le sujet suivant, cadre les enjeux
+    et pose les questions initiales auxquelles les participants doivent répondre :
+
+    SUJET : {initial_prompt}
+
+  moderator_context_prefix: "Le modérateur a dit :\n{content}"
+
+  round_header_template: "Tour {round_num} — Réponses des participants :"
+
+  intervention_prompt: >-
+    En tant que modérateur, fais la synthèse des positions exprimées ce tour,
+    identifie les points de convergence et de divergence,
+    puis pose une question approfondie pour alimenter le débat au prochain tour.
+
+  intervention_last_prompt: >-
+    En tant que modérateur, fais une synthèse complète des positions exprimées ce tour.
+    Identifie les points de convergence et de divergence.
+
+  conclusion_prompt: |
+    Question initiale : {initial_prompt}
+
+    Voici toutes les interventions des participants au fil des tours :
+
+    {turns}
+
+    En tant que modérateur, fais une synthèse finale équilibrée du débat :
+    résume les principales positions, les points d'accord et de désaccord,
+    et propose une conclusion générale.
+
+  continuation_prompt: |
+    Tu viens de modérer un débat sur le sujet : "{initial_prompt}".
+
+    Voici ta synthèse finale :
+    {conclusion_text}
+
+    Propose une seule question de suivi courte et précise qui permettrait d'approfondir
+    ou d'élargir le débat. Réponds uniquement avec la question, sans introduction ni explication.
+
+  previous_debate_label: "[Synthèse du débat précédent sur \"{initial_prompt}\"]"
+
+  previous_context_label: "[Contexte — débat précédent sur \"{initial_prompt}\"]"
+
+  agent_identity_template: "Tu es {name}. {role}"
+
+  agent_context_template: |
+    Contexte des autres agents :
+    {context}
+
+    Question : {prompt}
