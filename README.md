@@ -1,5 +1,9 @@
 # Agents Meeting (Débat multi-agents avec IA)
 
+## Menu
+- [Version Française](#agents-meeting-débat-multi-agents-avec-ia)
+- [English Version](#agents-meeting-multi-agent-ai-debate)
+
 Système de débat multi-agents avec IA - Interface TUI.
 
 ## Demo
