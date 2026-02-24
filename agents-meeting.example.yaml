@@ -3,6 +3,7 @@ title: "Discussion: L'IA va-t-elle transformer le travail ?"
 api_keys:
   openai: "env:OPENAI_API_KEY"
   anthropic: "env:ANTHROPIC_API_KEY"
+  gemini: "env:GEMINI_API_KEY"
   custom: "env:CUSTOM_API_KEY"
 
 agents:

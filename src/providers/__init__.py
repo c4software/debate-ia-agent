@@ -5,6 +5,7 @@ from .openai import OpenAIProvider
 from .anthropic import AnthropicProvider
 from .ollama import OllamaProvider
 from .custom import CustomProvider
+from .gemini import GeminiProvider
 
 __all__ = [
     "LLMProvider",
@@ -14,4 +15,5 @@ __all__ = [
     "AnthropicProvider",
     "OllamaProvider",
     "CustomProvider",
+    "GeminiProvider",
 ]

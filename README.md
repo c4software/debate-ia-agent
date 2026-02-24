@@ -98,13 +98,14 @@ title: "Titre de la réunion"
 api_keys:
   openai: "env:OPENAI_API_KEY"
   anthropic: "env:ANTHROPIC_API_KEY"
+  gemini: "env:GEMINI_API_KEY"
   ollama: "http://localhost:11434"
   custom: "env:CUSTOM_API_KEY"
 
 agents:
   - name: "Nom de l'agent"
     role: "Rôle/description de l'agent"
-    provider: "openai | anthropic | ollama | custom"
+    provider: "openai | anthropic | gemini | ollama | custom"
     model: "gpt-4o"
     temperature: 0.7
     max_tokens: 2000
@@ -146,6 +147,7 @@ debate:
 | ----------- | ------ | ------------------------------------- |
 | `openai`    | string | Clé API OpenAI (ou `env:VARIABLE`)    |
 | `anthropic` | string | Clé API Anthropic (ou `env:VARIABLE`) |
+| `gemini`    | string | Clé API Google Gemini (ou `env:VARIABLE`) |
 | `ollama`    | string | URL du serveur Ollama                 |
 | `custom`    | string | Clé API custom (ou `env:VARIABLE`)    |
 
@@ -155,7 +157,7 @@ debate:
 | ------------- | ------- | -------------------------------------------- | -------- |
 | `name`        | string  | Nom de l'agent                               | -        |
 | `role`        | string  | Rôle/description de l'agent                  | -        |
-| `provider`    | string  | `openai`, `anthropic`, `ollama`, `custom`    | -        |
+| `provider`    | string  | `openai`, `anthropic`, `gemini`, `ollama`, `custom` | -        |
 | `model`       | string  | Modèle à utiliser                            | `gpt-4o` |
 | `temperature` | float   | Température (0.0-2.0)                        | 0.7      |
 | `max_tokens`  | int     | Limite de tokens                             | -        |
@@ -191,6 +193,7 @@ debate:
 | --------- | -------------------------------------------------- |
 | OpenAI    | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc.           |
 | Anthropic | `claude-3-5-sonnet-*`, `claude-3-opus-*`, etc.     |
+| Gemini    | `gemini-2.0-flash`, `gemini-1.5-pro`, etc.        |
 | Ollama    | Modèles locaux (`llama3`, `mistral`, `phi3`, etc.) |
 | Custom    | API compatible OpenAI                              |
 
@@ -256,6 +259,7 @@ Les clés API peuvent être passées via des variables d'environnement :
 ```bash
 export OPENAI_API_KEY="sk-..."
 export ANTHROPIC_API_KEY="sk-ant-..."
+export GEMINI_API_KEY="AIza..."
 
 python -m src.main agents-meeting.yaml
 ```
@@ -265,6 +269,7 @@ Ou directement dans le fichier YAML avec le préfixe `env:` :
 ```yaml
 api_keys:
   openai: "env:OPENAI_API_KEY"
+  gemini: "env:GEMINI_API_KEY"
 ```
 
 # English Version
@@ -367,13 +372,14 @@ title: "Meeting title"
 api_keys:
   openai: "env:OPENAI_API_KEY"
   anthropic: "env:ANTHROPIC_API_KEY"
+  gemini: "env:GEMINI_API_KEY"
   ollama: "http://localhost:11434"
   custom: "env:CUSTOM_API_KEY"
 
 agents:
   - name: "Agent name"
     role: "Role/description of the agent"
-    provider: "openai | anthropic | ollama | custom"
+    provider: "openai | anthropic | gemini | ollama | custom"
     model: "gpt-4o"
     temperature: 0.7
     max_tokens: 2000
@@ -411,12 +417,13 @@ debate:
 
 #### api_keys
 
-| Parameter   | Type   | Description                           |
-| ----------- | ------ | ------------------------------------- |
-| `openai`    | string | OpenAI API key (or `env:VARIABLE`)    |
-| `anthropic` | string | Anthropic API key (or `env:VARIABLE`) |
-| `ollama`    | string | Ollama server URL                     |
-| `custom`    | string | Custom API key (or `env:VARIABLE`)    |
+| Parameter   | Type   | Description                             |
+| ----------- | ------ | --------------------------------------- |
+| `openai`    | string | OpenAI API key (or `env:VARIABLE`)      |
+| `anthropic` | string | Anthropic API key (or `env:VARIABLE`)  |
+| `gemini`    | string | Google Gemini API key (or `env:VARIABLE`) |
+| `ollama`    | string | Ollama server URL                       |
+| `custom`    | string | Custom API key (or `env:VARIABLE`)      |
 
 #### agents[]
 
@@ -424,7 +431,7 @@ debate:
 | ------------- | ------- | ----------------------------------------- | -------- |
 | `name`        | string  | Agent name                                | -        |
 | `role`        | string  | Role/description of the agent             | -        |
-| `provider`    | string  | `openai`, `anthropic`, `ollama`, `custom` | -        |
+| `provider`    | string  | `openai`, `anthropic`, `gemini`, `ollama`, `custom` | -        |
 | `model`       | string  | Model to use                              | `gpt-4o` |
 | `temperature` | float   | Temperature (0.0-2.0)                     | 0.7      |
 | `max_tokens`  | int     | Token limit                               | -        |
@@ -460,6 +467,7 @@ debate:
 | --------- | ------------------------------------------------ |
 | OpenAI    | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc.         |
 | Anthropic | `claude-3-5-sonnet-*`, `claude-3-opus-*`, etc.   |
+| Gemini    | `gemini-2.0-flash`, `gemini-1.5-pro`, etc.        |
 | Ollama    | Local models (`llama3`, `mistral`, `phi3`, etc.) |
 | Custom    | OpenAI-compatible API                            |
 
@@ -525,6 +533,7 @@ API keys can be passed via environment variables:
 ```bash
 export OPENAI_API_KEY="sk-..."
 export ANTHROPIC_API_KEY="sk-ant-..."
+export GEMINI_API_KEY="AIza..."
 
 python -m src.main agents-meeting.yaml
 ```
@@ -534,4 +543,5 @@ Or directly in the YAML file with the `env:` prefix:
 ```yaml
 api_keys:
   openai: "env:OPENAI_API_KEY"
+  gemini: "env:GEMINI_API_KEY"
 ```

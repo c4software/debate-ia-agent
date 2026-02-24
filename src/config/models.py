@@ -7,12 +7,14 @@ from typing import Any
 
 class APIKeysConfig(BaseModel):
     """Global API keys configuration."""
+
     openai: str | None = Field(default=None, description="OpenAI key")
     anthropic: str | None = Field(default=None, description="Anthropic key")
+    gemini: str | None = Field(default=None, description="Google Gemini API key")
     ollama: str | None = Field(default=None, description="Ollama URL (optional)")
     custom: str | None = Field(default=None, description="Custom API key")
 
-    @field_validator("openai", "anthropic", "custom")
+    @field_validator("openai", "anthropic", "gemini", "custom")
     @classmethod
     def resolve_env_var(cls, v: str | None) -> str | None:
         if v and v.startswith("env:"):
@@ -23,9 +25,10 @@ class APIKeysConfig(BaseModel):
 
 class AgentConfig(BaseModel):
     """Configuration for an agent."""
+
     name: str = Field(..., description="Agent name")
     role: str = Field(..., description="Role/description of the agent")
-    provider: str = Field(..., description="Provider: openai, anthropic, ollama, custom")
+    provider: str = Field(..., description="Provider: openai, anthropic, gemini, ollama, custom")
     model: str = Field(default="gpt-4o", description="Model to use")
     temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     max_tokens: int | None = Field(default=None, description="Token limit")
@@ -51,15 +54,14 @@ class AgentConfig(BaseModel):
 
 class DebateConfig(BaseModel):
     """Configuration for the debate."""
+
     rounds: int = Field(default=2, ge=1, le=10, description="Number of discussion rounds")
     initial_prompt: str = Field(..., description="Initial question/prompt")
     system_prompt: str | None = Field(
-        default=None,
-        description="Optional system prompt for all agents"
+        default=None, description="Optional system prompt for all agents"
     )
     leader_prompt: str | None = Field(
-        default=None,
-        description="Additional prompt for the leader (moderation instructions)"
+        default=None, description="Additional prompt for the leader (moderation instructions)"
     )
 
     # --- Configurable prompt templates (English defaults) ---
@@ -127,7 +129,7 @@ class DebateConfig(BaseModel):
 
     continuation_prompt: str = Field(
         default=(
-            "You just moderated a debate on the topic: \"{initial_prompt}\".\n\n"
+            'You just moderated a debate on the topic: "{initial_prompt}".\n\n'
             "Here is your final synthesis:\n{conclusion_text}\n\n"
             "Propose only one short and precise follow-up question that would deepen "
             "or broaden the debate. Respond only with the question, without introduction or explanation."
@@ -139,7 +141,7 @@ class DebateConfig(BaseModel):
     )
 
     previous_debate_label: str = Field(
-        default="[Synthesis of previous debate on \"{initial_prompt}\"]",
+        default='[Synthesis of previous debate on "{initial_prompt}"]',
         description=(
             "Label injected into the leader's LLM history when continuing a debate. "
             "Use {initial_prompt} for the previous topic."
@@ -147,7 +149,7 @@ class DebateConfig(BaseModel):
     )
 
     previous_context_label: str = Field(
-        default="[Context — previous debate on \"{initial_prompt}\"]",
+        default='[Context — previous debate on "{initial_prompt}"]',
         description=(
             "Context prefix injected into agents' starting context for a continuation. "
             "Use {initial_prompt} for the previous topic."
@@ -157,8 +159,7 @@ class DebateConfig(BaseModel):
     agent_identity_template: str = Field(
         default="You are {name}. {role}",
         description=(
-            "Template for the agent identity line in the system prompt. "
-            "Use {name} and {role}."
+            "Template for the agent identity line in the system prompt. Use {name} and {role}."
         ),
     )
 
@@ -173,6 +174,7 @@ class DebateConfig(BaseModel):
 
 class MeetingConfig(BaseModel):
     """Complete meeting configuration."""
+
     agents: list[AgentConfig] = Field(..., description="List of agents")
     debate: DebateConfig = Field(..., description="Debate configuration")
     title: str | None = Field(default=None, description="Meeting title")

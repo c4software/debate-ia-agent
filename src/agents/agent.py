@@ -1,6 +1,5 @@
 """Agents for agents-meeting."""
 
-import asyncio
 from dataclasses import dataclass, field
 from typing import AsyncGenerator
 
@@ -12,12 +11,14 @@ from src.providers import (
     AnthropicProvider,
     OllamaProvider,
     CustomProvider,
+    GeminiProvider,
 )
 
 
 @dataclass
 class Turn:
     """A turn of speech for an agent."""
+
     round: int
     phase: str
     content: str
@@ -27,6 +28,7 @@ class Turn:
 @dataclass
 class Agent:
     """Represents an agent in the debate."""
+
     config: AgentConfig
     global_api_keys: APIKeysConfig | None = None
     provider: LLMProvider = field(init=False)
@@ -39,7 +41,7 @@ class Agent:
     def _create_provider(self) -> LLMProvider:
         extra = self.config.extra or {}
         api_key = self.config.resolve_api_key(self.global_api_keys)
-        
+
         if self.config.provider == "openai":
             return OpenAIProvider(
                 model=self.config.model,
@@ -72,6 +74,14 @@ class Agent:
                 temperature=self.config.temperature,
                 max_tokens=self.config.max_tokens,
                 base_url=self.config.base_url or "http://localhost:8000/v1",
+                api_key=api_key,
+                **extra,
+            )
+        elif self.config.provider == "gemini":
+            return GeminiProvider(
+                model=self.config.model,
+                temperature=self.config.temperature,
+                max_tokens=self.config.max_tokens,
                 api_key=api_key,
                 **extra,
             )
@@ -160,14 +170,11 @@ class Agent:
         system_prompt: str | None = None,
     ) -> str:
         """The agent reacts to other agents' responses."""
-        context_lines = [
-            f"### Response from {name}:"
-            for name in other_agents_responses.keys()
-        ]
+        context_lines = [f"### Response from {name}:" for name in other_agents_responses.keys()]
         context_lines.append("")
         for name, response in other_agents_responses.items():
             context_lines.append(f"**{name}**: {response}")
-        
+
         context = "\n".join(context_lines)
         return await self.think(prompt, context=context, system_prompt=system_prompt)
 
