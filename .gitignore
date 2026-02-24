@@ -223,4 +223,10 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,linux,macos
 
-**/__pycache__/
+# ===== agents-meeting specific =====
+
+# Artefact setuptools dans src/ (pip install -e .)
+src/*.egg-info/
+
+# Fichiers de sortie générés par le débat (touche 'w' dans la TUI)
+debate_*.md
