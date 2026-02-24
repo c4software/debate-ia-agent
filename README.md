@@ -238,3 +238,246 @@ Ou directement dans le fichier YAML avec le préfixe `env:` :
 api_keys:
   openai: "env:OPENAI_API_KEY"
 ```
+
+# English Version
+
+# Agents Meeting (Multi-Agent AI Debate)
+
+Multi-agent AI debate system - TUI interface.
+
+## Demo
+
+![Demo 1](preview/capture1.jpg)
+![Demo 2](preview/capture2.jpg)
+
+Demo video: <https://www.youtube.com/watch?v=A9FqB06vN3s>
+
+## Description
+
+Agents Meeting enables launching debates between multiple AI agents on a given topic. A "leader" agent moderates the debate by:
+
+- Presenting the initial topic
+- Providing synthesis interventions between rounds
+- Asking refined questions to deepen the debate
+- Producing a final summary
+
+Participant agents respond in parallel each round.
+
+## Installation
+
+```bash
+# Create virtual environment
+./install.sh
+
+# Activate environment
+source venv/bin/activate
+```
+
+## Usage
+
+### TUI mode (terminal graphical interface)
+
+```bash
+python -m src.main agents-meeting.yaml
+```
+
+### CLI mode (command line)
+
+```bash
+python -m src.main agents-meeting.yaml --cli
+```
+
+### Create a config file
+
+```bash
+python -m src.main --create-config
+```
+
+### Modify the prompt
+
+```bash
+python -m src.main agents-meeting.yaml --prompt "Your question here"
+```
+
+## Keyboard shortcuts (TUI mode)
+
+| Key       | Action                                      | Availability             |
+| --------- | ------------------------------------------ | ------------------------ |
+| `Enter`   | Start the debate                           | Welcome screen           |
+| `Esc`     | Stop the current debate                    | During debate            |
+| `m`       | Show/hide moderator zone                   | During/after debate      |
+| `w`       | Save conversation to Markdown              | During/after debate      |
+| `c`       | Continue with a new question               | After debate ends        |
+| `r`       | New question (return to welcome)           | During/after debate      |
+| `q`       | Quit                                        | Everywhere               |
+
+## Conversation save
+
+Pressing `w` during or after the debate generates a Markdown file containing:
+
+- Moderator interventions (opening, round summaries, conclusion)
+- Each agent's responses by round
+
+**File name:**
+A dialog asks for the file name, with a default proposal `debate_YYYY-MM-DD_HH-MM.md`. Just press Enter to accept.
+
+## Debate continuation
+
+At the end of a debate, pressing `c` launches a new session on a complementary question:
+
+- The moderator analyzes their final summary and **automatically proposes a follow-up question**, pre-filled in an editable field
+- The question can be freely modified before confirmation
+- **The moderator retains their history** and has context from the previous debate
+- **Participant agents start fresh**, but receive the moderator's summary as a starting point
+- The same number of rounds as the initial debate is used
+
+## YAML configuration
+
+### Complete structure
+
+```yaml
+title: "Meeting title"
+
+api_keys:
+  openai: "env:OPENAI_API_KEY"
+  anthropic: "env:ANTHROPIC_API_KEY"
+  ollama: "http://localhost:11434"
+  custom: "env:CUSTOM_API_KEY"
+
+agents:
+  - name: "Agent name"
+    role: "Role/description of the agent"
+    provider: "openai | anthropic | ollama | custom"
+    model: "gpt-4o"
+    temperature: 0.7
+    max_tokens: 2000
+    api_key: "env:MY_API_KEY" # Optional, takes precedence over global api_keys
+    base_url: "https://api.example.com" # Optional
+    is_leader: true
+
+debate:
+  rounds: 2
+  initial_prompt: "Initial question/prompt"
+  system_prompt: "Optional system prompt for all agents"
+  leader_prompt: "Additional instructions for the leader"
+```
+
+### Parameter details
+
+#### Top-level
+
+| Parameter | Type   | Description        |
+| --------- | ------ | ------------------ |
+| `title`   | string | Meeting title      |
+
+#### api_keys
+
+| Parameter   | Type   | Description                          |
+| ----------- | ------ | ------------------------------------ |
+| `openai`    | string | OpenAI API key (or `env:VARIABLE`)  |
+| `anthropic` | string | Anthropic API key (or `env:VARIABLE`) |
+| `ollama`    | string | Ollama server URL                    |
+| `custom`    | string | Custom API key (or `env:VARIABLE`)  |
+
+#### agents[]
+
+| Parameter     | Type    | Description                                   | Default   |
+| ------------- | ------- | --------------------------------------------- | -------- |
+| `name`        | string  | Agent name                                    | -        |
+| `role`        | string  | Role/description of the agent                 | -        |
+| `provider`    | string  | `openai`, `anthropic`, `ollama`, `custom`     | -        |
+| `model`       | string  | Model to use                                  | `gpt-4o` |
+| `temperature` | float   | Temperature (0.0-2.0)                         | 0.7      |
+| `max_tokens`  | int     | Token limit                                   | -        |
+| `api_key`     | string  | Local API key (or `env:VARIABLE`)             | -        |
+| `base_url`    | string  | API URL (replaces default value)              | -        |
+| `is_leader`   | boolean | Leader/moderator agent                       | `false`  |
+
+#### debate
+
+| Parameter        | Type   | Description                   | Default |
+| ---------------- | ------ | ----------------------------- | ------ |
+| `rounds`         | int    | Number of rounds (1-10)       | 2      |
+| `initial_prompt` | string | Initial question/prompt       | -      |
+| `system_prompt`  | string | Global system prompt          | -      |
+| `leader_prompt`  | string | Instructions for the leader   | -      |
+
+## Providers
+
+| Provider  | Available models                                  |
+| --------- | -------------------------------------------------- |
+| OpenAI    | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc.          |
+| Anthropic | `claude-3-5-sonnet-*`, `claude-3-opus-*`, etc.   |
+| Ollama    | Local models (`llama2`, `mistral`, `phi3`, etc.) |
+| Custom    | OpenAI-compatible API                             |
+
+### Ollama (local)
+
+To use Ollama locally:
+
+1. Install Ollama: https://ollama.ai
+2. Start the server: `ollama serve`
+3. Download a model: `ollama pull llama2`
+
+Configuration example:
+
+```yaml
+agents:
+  - name: "Agent1"
+    provider: "ollama"
+    model: "llama2"
+    base_url: "http://localhost:11434"
+```
+
+## Complete example
+
+```yaml
+title: "Debate: AI and employment"
+
+api_keys:
+  openai: "env:OPENAI_API_KEY"
+
+agents:
+  - name: "Moderator"
+    role: "Leads the debate, synthesizes positions"
+    provider: "openai"
+    model: "gpt-4o"
+    temperature: 0.5
+    is_leader: true
+
+  - name: "Optimist"
+    role: "Sees opportunities and AI potential"
+    provider: "openai"
+    model: "gpt-4o"
+    temperature: 0.8
+
+  - name: "Skeptic"
+    role: "Questions benefits and highlights risks"
+    provider: "openai"
+    model: "gpt-4o"
+    temperature: 0.7
+
+debate:
+  rounds: 2
+  initial_prompt: "Will AI replace developers?"
+  system_prompt: "You are participating in a structured debate. Be concise and argumentative."
+  leader_prompt: "As moderator, ensure all viewpoints are expressed."
+```
+
+## Environment variables
+
+API keys can be passed via environment variables:
+
+```bash
+export OPENAI_API_KEY="sk-..."
+export ANTHROPIC_API_KEY="sk-ant-..."
+
+python -m src.main agents-meeting.yaml
+```
+
+Or directly in the YAML file with the `env:` prefix:
+
+```yaml
+api_keys:
+  openai: "env:OPENAI_API_KEY"
+```
