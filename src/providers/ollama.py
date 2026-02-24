@@ -13,7 +13,7 @@ class OllamaProvider(LLMProvider):
 
     def __init__(
         self,
-        model: str = "llama2",
+        model: str = "llama3",
         temperature: float = 0.7,
         max_tokens: int | None = None,
         base_url: str = "http://localhost:11434",

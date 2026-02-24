@@ -163,7 +163,7 @@ debate:
 | --------- | -------------------------------------------------- |
 | OpenAI    | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc.           |
 | Anthropic | `claude-3-5-sonnet-*`, `claude-3-opus-*`, etc.     |
-| Ollama    | Modèles locaux (`llama2`, `mistral`, `phi3`, etc.) |
+| Ollama    | Modèles locaux (`llama3`, `mistral`, `phi3`, etc.) |
 | Custom    | API compatible OpenAI                              |
 
 ### Ollama (local)
@@ -172,7 +172,7 @@ Pour utiliser Ollama en local :
 
 1. Installer Ollama : https://ollama.ai
 2. Lancer le serveur : `ollama serve`
-3. Télécharger un modèle : `ollama pull llama2`
+3. Télécharger un modèle : `ollama pull llama3`
 
 Exemple de configuration :
 
@@ -180,7 +180,7 @@ Exemple de configuration :
 agents:
   - name: "Agent1"
     provider: "ollama"
-    model: "llama2"
+    model: "llama3"
     base_url: "http://localhost:11434"
 ```
 
@@ -191,6 +191,7 @@ title: "Débat: L'IA et l'emploi"
 
 api_keys:
   openai: "env:OPENAI_API_KEY"
+  anthropic: "env:ANTHROPIC_API_KEY"
 
 agents:
   - name: "Modérateur"
@@ -202,14 +203,15 @@ agents:
 
   - name: "Optimiste"
     role: "Voit les opportunités et le potentiel de l'IA"
-    provider: "openai"
-    model: "gpt-4o"
+    provider: "anthropic"
+    model: "claude-3-5-sonnet-20241022"
     temperature: 0.8
 
   - name: "Sceptique"
     role: "Remet en question les bénéfices et souligne les risques"
-    provider: "openai"
-    model: "gpt-4o"
+    provider: "ollama"
+    model: "llama3"
+    base_url: "http://localhost:11434"
     temperature: 0.7
 
 debate:
@@ -404,7 +406,7 @@ debate:
 | --------- | ------------------------------------------------ |
 | OpenAI    | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc.         |
 | Anthropic | `claude-3-5-sonnet-*`, `claude-3-opus-*`, etc.   |
-| Ollama    | Local models (`llama2`, `mistral`, `phi3`, etc.) |
+| Ollama    | Local models (`llama3`, `mistral`, `phi3`, etc.) |
 | Custom    | OpenAI-compatible API                            |
 
 ### Ollama (local)
@@ -413,7 +415,7 @@ To use Ollama locally:
 
 1. Install Ollama: https://ollama.ai
 2. Start the server: `ollama serve`
-3. Download a model: `ollama pull llama2`
+3. Download a model: `ollama pull llama3`
 
 Configuration example:
 
@@ -421,7 +423,7 @@ Configuration example:
 agents:
   - name: "Agent1"
     provider: "ollama"
-    model: "llama2"
+    model: "llama3"
     base_url: "http://localhost:11434"
 ```
 
@@ -432,6 +434,7 @@ title: "Debate: AI and employment"
 
 api_keys:
   openai: "env:OPENAI_API_KEY"
+  anthropic: "env:ANTHROPIC_API_KEY"
 
 agents:
   - name: "Moderator"
@@ -443,14 +446,15 @@ agents:
 
   - name: "Optimist"
     role: "Sees opportunities and AI potential"
-    provider: "openai"
-    model: "gpt-4o"
+    provider: "anthropic"
+    model: "claude-3-5-sonnet-20241022"
     temperature: 0.8
 
   - name: "Skeptic"
     role: "Questions benefits and highlights risks"
-    provider: "openai"
-    model: "gpt-4o"
+    provider: "ollama"
+    model: "llama3"
+    base_url: "http://localhost:11434"
     temperature: 0.7
 
 debate:
