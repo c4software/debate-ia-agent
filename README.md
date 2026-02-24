@@ -1,8 +1,6 @@
 # Agents Meeting (Débat multi-agents avec IA)
 
-## Menu
-- [Version Française](#agents-meeting-débat-multi-agents-avec-ia)
-- [English Version](#agents-meeting-multi-agent-ai-debate)
+[Go to the english version](#agents-meeting-multi-agent-ai-debate)
 
 Système de débat multi-agents avec IA - Interface TUI.
 
@@ -128,8 +126,8 @@ debate:
   intervention_last_prompt: "En tant que modérateur, fais une synthèse complète..."
   conclusion_prompt: "Question initiale : {initial_prompt}\n\n{turns}\n\n..."
   continuation_prompt: "Tu viens de modérer un débat sur : \"{initial_prompt}\"...\n{conclusion_text}"
-  previous_debate_label: "[Synthèse du débat précédent sur \"{initial_prompt}\"]"
-  previous_context_label: "[Contexte — débat précédent sur \"{initial_prompt}\"]"
+  previous_debate_label: '[Synthèse du débat précédent sur "{initial_prompt}"]'
+  previous_context_label: '[Contexte — débat précédent sur "{initial_prompt}"]'
   agent_identity_template: "Tu es {name}. {role}"
   agent_context_template: "Contexte des autres agents :\n{context}\n\nQuestion : {prompt}"
 ```
@@ -167,23 +165,23 @@ debate:
 
 #### debate
 
-| Paramètre                  | Type   | Description                                                                       | Défaut |
-| -------------------------- | ------ | --------------------------------------------------------------------------------- | ------ |
-| `rounds`                   | int    | Nombre de tours (1-10)                                                            | 2      |
-| `initial_prompt`           | string | Question/prompt initial                                                           | -      |
-| `system_prompt`            | string | System prompt global (injecté dans tous les agents)                               | -      |
-| `leader_prompt`            | string | Instructions supplémentaires pour le leader uniquement                            | -      |
-| `intro_prompt`             | string | Prompt d'ouverture du débat. Variable : `{initial_prompt}`                        | (EN)   |
-| `moderator_context_prefix` | string | Préfixe du contexte modérateur injecté dans les agents. Variable : `{content}`   | (EN)   |
-| `round_header_template`    | string | En-tête de chaque tour dans le prompt du leader. Variable : `{round_num}`         | (EN)   |
-| `intervention_prompt`      | string | Instruction de synthèse pour les tours intermédiaires                             | (EN)   |
-| `intervention_last_prompt` | string | Instruction de synthèse pour le dernier tour                                      | (EN)   |
-| `conclusion_prompt`        | string | Prompt de synthèse finale. Variables : `{initial_prompt}`, `{turns}`             | (EN)   |
-| `continuation_prompt`      | string | Prompt de question de suivi. Variables : `{initial_prompt}`, `{conclusion_text}` | (EN)   |
-| `previous_debate_label`    | string | Étiquette injectée dans l'historique du leader (continuation). Variable : `{initial_prompt}` | (EN) |
-| `previous_context_label`   | string | Étiquette de contexte pour les agents (continuation). Variable : `{initial_prompt}` | (EN) |
-| `agent_identity_template`  | string | Template d'identité de l'agent dans le system prompt. Variables : `{name}`, `{role}` | (EN) |
-| `agent_context_template`   | string | Template du message utilisateur avec contexte. Variables : `{context}`, `{prompt}` | (EN) |
+| Paramètre                  | Type   | Description                                                                                  | Défaut |
+| -------------------------- | ------ | -------------------------------------------------------------------------------------------- | ------ |
+| `rounds`                   | int    | Nombre de tours (1-10)                                                                       | 2      |
+| `initial_prompt`           | string | Question/prompt initial                                                                      | -      |
+| `system_prompt`            | string | System prompt global (injecté dans tous les agents)                                          | -      |
+| `leader_prompt`            | string | Instructions supplémentaires pour le leader uniquement                                       | -      |
+| `intro_prompt`             | string | Prompt d'ouverture du débat. Variable : `{initial_prompt}`                                   | (EN)   |
+| `moderator_context_prefix` | string | Préfixe du contexte modérateur injecté dans les agents. Variable : `{content}`               | (EN)   |
+| `round_header_template`    | string | En-tête de chaque tour dans le prompt du leader. Variable : `{round_num}`                    | (EN)   |
+| `intervention_prompt`      | string | Instruction de synthèse pour les tours intermédiaires                                        | (EN)   |
+| `intervention_last_prompt` | string | Instruction de synthèse pour le dernier tour                                                 | (EN)   |
+| `conclusion_prompt`        | string | Prompt de synthèse finale. Variables : `{initial_prompt}`, `{turns}`                         | (EN)   |
+| `continuation_prompt`      | string | Prompt de question de suivi. Variables : `{initial_prompt}`, `{conclusion_text}`             | (EN)   |
+| `previous_debate_label`    | string | Étiquette injectée dans l'historique du leader (continuation). Variable : `{initial_prompt}` | (EN)   |
+| `previous_context_label`   | string | Étiquette de contexte pour les agents (continuation). Variable : `{initial_prompt}`          | (EN)   |
+| `agent_identity_template`  | string | Template d'identité de l'agent dans le system prompt. Variables : `{name}`, `{role}`         | (EN)   |
+| `agent_context_template`   | string | Template du message utilisateur avec contexte. Variables : `{context}`, `{prompt}`           | (EN)   |
 
 > **(EN)** = valeur par défaut en anglais définie dans le code. Surcharger dans le YAML pour utiliser une autre langue (voir `agents-meeting.example.yaml`).
 
@@ -397,8 +395,8 @@ debate:
   intervention_last_prompt: "As moderator, provide a complete synthesis..."
   conclusion_prompt: "Original question: {initial_prompt}\n\n{turns}\n\n..."
   continuation_prompt: "You just moderated a debate on: \"{initial_prompt}\"...\n{conclusion_text}"
-  previous_debate_label: "[Synthesis of previous debate on \"{initial_prompt}\"]"
-  previous_context_label: "[Context — previous debate on \"{initial_prompt}\"]"
+  previous_debate_label: '[Synthesis of previous debate on "{initial_prompt}"]'
+  previous_context_label: '[Context — previous debate on "{initial_prompt}"]'
   agent_identity_template: "You are {name}. {role}"
   agent_context_template: "Other agents' context:\n{context}\n\nQuestion: {prompt}"
 ```
@@ -447,12 +445,12 @@ debate:
 | `round_header_template`    | string | Header line in the leader's intervention prompt. Variable: `{round_num}`           | (EN)    |
 | `intervention_prompt`      | string | Synthesis instruction for mid-debate rounds                                        | (EN)    |
 | `intervention_last_prompt` | string | Synthesis instruction for the final round                                          | (EN)    |
-| `conclusion_prompt`        | string | Final synthesis prompt. Variables: `{initial_prompt}`, `{turns}`                  | (EN)    |
-| `continuation_prompt`      | string | Follow-up question prompt. Variables: `{initial_prompt}`, `{conclusion_text}`     | (EN)    |
-| `previous_debate_label`    | string | Label injected into leader's history (continuation). Variable: `{initial_prompt}` | (EN)    |
-| `previous_context_label`   | string | Context label for agents (continuation). Variable: `{initial_prompt}`             | (EN)    |
-| `agent_identity_template`  | string | Agent identity line in system prompt. Variables: `{name}`, `{role}`               | (EN)    |
-| `agent_context_template`   | string | User message template when context is provided. Variables: `{context}`, `{prompt}` | (EN)   |
+| `conclusion_prompt`        | string | Final synthesis prompt. Variables: `{initial_prompt}`, `{turns}`                   | (EN)    |
+| `continuation_prompt`      | string | Follow-up question prompt. Variables: `{initial_prompt}`, `{conclusion_text}`      | (EN)    |
+| `previous_debate_label`    | string | Label injected into leader's history (continuation). Variable: `{initial_prompt}`  | (EN)    |
+| `previous_context_label`   | string | Context label for agents (continuation). Variable: `{initial_prompt}`              | (EN)    |
+| `agent_identity_template`  | string | Agent identity line in system prompt. Variables: `{name}`, `{role}`                | (EN)    |
+| `agent_context_template`   | string | User message template when context is provided. Variables: `{context}`, `{prompt}` | (EN)    |
 
 > **(EN)** = English default defined in code. Override in YAML to use a different language (see `agents-meeting.example.yaml`).
 
