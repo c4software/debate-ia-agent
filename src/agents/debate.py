@@ -104,8 +104,6 @@ class DebateManager:
             f"et pose les questions initiales auxquelles les participants devront répondre:\n\n"
             f"SUJET: {self.config.debate.initial_prompt}"
         )
-        if self.config.debate.leader_prompt:
-            prompt += f"\n\n{self.config.debate.leader_prompt}"
 
         self._emit("leader_section_start", 0, "intro", self.leader.config.name, "## Ouverture du débat")
         self._emit("leader_thinking", 0, "intro", self.leader.config.name, None)
@@ -194,8 +192,6 @@ class DebateManager:
             + "\n".join(context_parts) + "\n\n"
             + instruction
         )
-        if self.config.debate.leader_prompt:
-            prompt += f"\n\n{self.config.debate.leader_prompt}"
 
         self._emit("leader_section_start", round_num, "leader_intervention",
                    self.leader.config.name, f"## Tour {round_num}")
@@ -310,8 +306,6 @@ class DebateManager:
             f"résume les grandes positions, les points d'accord et de désaccord, "
             f"et propose une conclusion générale."
         )
-        if self.config.debate.leader_prompt:
-            prompt += f"\n\n{self.config.debate.leader_prompt}"
 
         self._emit("leader_section_start", self._current_round, "conclusion",
                    self.leader.config.name, "## Synthese finale")
@@ -332,6 +326,7 @@ class DebateManager:
             async for chunk in self.leader.think_stream(
                 prompt,
                 system_prompt=self.config.debate.system_prompt,
+                leader_prompt=self.config.debate.leader_prompt,
             ):
                 if self._cancelled:
                     break

@@ -78,12 +78,18 @@ class Agent:
         else:
             raise ValueError(f"Provider inconnu: {self.config.provider}")
 
-    def build_system_prompt(self, global_system: str | None = None) -> str:
+    def build_system_prompt(
+        self,
+        global_system: str | None = None,
+        leader_prompt: str | None = None,
+    ) -> str:
         """Construit le system prompt pour l'agent."""
         parts = []
         if global_system:
             parts.append(global_system)
         parts.append(f"Tu es {self.config.name}. {self.config.role}")
+        if leader_prompt:
+            parts.append(leader_prompt)
         return "\n\n".join(parts)
 
     async def think(
@@ -91,9 +97,10 @@ class Agent:
         prompt: str,
         context: str | None = None,
         system_prompt: str | None = None,
+        leader_prompt: str | None = None,
     ) -> str:
         """L'agent réfléchit et répond au prompt."""
-        system = self.build_system_prompt(system_prompt)
+        system = self.build_system_prompt(system_prompt, leader_prompt)
         
         user_content = prompt
         if context:
@@ -116,9 +123,10 @@ class Agent:
         prompt: str,
         context: str | None = None,
         system_prompt: str | None = None,
+        leader_prompt: str | None = None,
     ) -> AsyncGenerator[str, None]:
         """Version streaming de think."""
-        system = self.build_system_prompt(system_prompt)
+        system = self.build_system_prompt(system_prompt, leader_prompt)
         
         user_content = prompt
         if context:
