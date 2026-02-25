@@ -37,13 +37,13 @@ source venv/bin/activate
 ### Mode TUI (interface graphique terminal)
 
 ```bash
-python -m src.main agents-meeting.yaml
+python -m src.main samples/agents-meeting.yaml
 ```
 
 ### Mode CLI (ligne de commande)
 
 ```bash
-python -m src.main agents-meeting.yaml --cli
+python -m src.main samples/agents-meeting.yaml --cli
 ```
 
 ### Créer un fichier de config
@@ -53,7 +53,7 @@ Un fichier YAML d'exemple est fourni. Il suffit de le copier et de le modifier p
 ### Modifier le prompt
 
 ```bash
-python -m src.main agents-meeting.yaml --prompt "Votre question ici"
+python -m src.main samples/agents-meeting.yaml --prompt "Votre question ici"
 ```
 
 ## Raccourcis clavier (mode TUI)
@@ -274,7 +274,7 @@ export OPENAI_API_KEY="sk-..."
 export ANTHROPIC_API_KEY="sk-ant-..."
 export GEMINI_API_KEY="AIza..."
 
-python -m src.main agents-meeting.yaml
+python -m src.main samples/agents-meeting.yaml
 ```
 
 Ou directement dans le fichier YAML avec le préfixe `env:` :
@@ -324,13 +324,13 @@ source venv/bin/activate
 ### TUI mode (terminal graphical interface)
 
 ```bash
-python -m src.main agents-meeting.yaml
+python -m src.main samples/agents-meeting.yaml
 ```
 
 ### CLI mode (command line)
 
 ```bash
-python -m src.main agents-meeting.yaml --cli
+python -m src.main samples/agents-meeting.yaml --cli
 ```
 
 ### Create a config file
@@ -340,7 +340,7 @@ Look at the example YAML file and create your own.
 ### Modify the prompt
 
 ```bash
-python -m src.main agents-meeting.yaml --prompt "Your question here"
+python -m src.main samples/agents-meeting.yaml --prompt "Your question here"
 ```
 
 ## Keyboard shortcuts (TUI mode)
@@ -548,7 +548,7 @@ export OPENAI_API_KEY="sk-..."
 export ANTHROPIC_API_KEY="sk-ant-..."
 export GEMINI_API_KEY="AIza..."
 
-python -m src.main agents-meeting.yaml
+python -m src.main samples/agents-meeting.yaml
 ```
 
 Or directly in the YAML file with the `env:` prefix:

@@ -1,0 +1,76 @@
+title: "Recherche marketing - Nom de produit"
+
+agents:
+  - name: "Strategiste"
+    role: "Definit le positionnement, la cible et les contraintes de marque"
+    provider: "ollama"
+    model: "gpt-oss:20b"
+    temperature: 0.6
+    is_leader: true
+    base_url: "http://192.168.1.12:1234"
+
+  - name: "Creatif"
+    role: "Genere des noms originaux, memorables et distinctifs"
+    provider: "ollama"
+    model: "translategemma"
+    temperature: 0.9
+    is_leader: false
+    base_url: "http://192.168.1.12:1234"
+
+  - name: "Analyste"
+    role: "Evalue la clarte, la prononcabilite, le potentiel SEO et les risques de confusion"
+    provider: "ollama"
+    model: "gpt-oss:20b"
+    temperature: 0.5
+    is_leader: false
+    base_url: "http://192.168.1.12:1234"
+
+research:
+  rounds: 2
+  initial_prompt: "Decris le produit, la cible et les contraintes (langue, ton, domaine)."
+
+  system_prompt: "Tu participes a une recherche de naming structuree. Sois creatif mais strategique."
+
+  leader_prompt: "En tant que strategiste, valide la coherence entre le nom et le positionnement."
+
+  intro_prompt: |
+    Reformule la proposition de valeur.
+    Definis :
+    - Cible principale
+    - Emotion a transmettre
+    - Univers lexical pertinent
+
+  round_header_template: "Tour {round_num} — Propositions de noms :"
+
+  intervention_prompt: >-
+    Selectionne les meilleures propositions.
+    Elimine celles qui sont trop generiques ou ambiguës.
+    Oriente vers une shortlist coherente.
+
+  intervention_last_prompt: >-
+    Produis une shortlist finale de 5 noms maximum.
+    Pour chaque nom :
+    - Signification
+    - Positionnement
+    - Points forts
+    - Risques eventuels
+
+  conclusion_prompt: |
+    Description initiale : {initial_prompt}
+
+    Historique des propositions :
+    {turns}
+
+    Fournis une recommandation finale :
+    - Nom recommande
+    - Justification strategique
+    - Variante alternative
+
+  agent_identity_template: "Tu es {name}. {role}"
+
+  agent_context_template: |
+    Propositions precedentes :
+    {context}
+
+    Description du produit :
+    {prompt}
