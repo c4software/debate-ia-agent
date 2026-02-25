@@ -1,76 +1,88 @@
-title: "Recherche marketing - Nom de produit"
+title: "Recherche créative marketing"
 
 agents:
-  - name: "Strategiste"
-    role: "Definit le positionnement, la cible et les contraintes de marque"
-    provider: "ollama"
-    model: "gpt-oss:20b"
-    temperature: 0.6
-    is_leader: true
-    base_url: "http://192.168.1.12:1234"
-
-  - name: "Creatif"
-    role: "Genere des noms originaux, memorables et distinctifs"
-    provider: "ollama"
-    model: "translategemma"
-    temperature: 0.9
-    is_leader: false
-    base_url: "http://192.168.1.12:1234"
-
-  - name: "Analyste"
-    role: "Evalue la clarte, la prononcabilite, le potentiel SEO et les risques de confusion"
+  - name: "Directeur de Création"
+    role: "Anime la session, synthétise les concepts et oriente vers les idées les plus impactantes"
     provider: "ollama"
     model: "gpt-oss:20b"
     temperature: 0.5
+    is_leader: true
+    base_url: "http://192.168.1.12:1234"
+
+  - name: "Concepteur"
+    role: "Génère des concepts créatifs audacieux, des angles narratifs et des idées de campagne originales"
+    provider: "ollama"
+    model: "translategemma"
+    temperature: 0.95
     is_leader: false
     base_url: "http://192.168.1.12:1234"
 
-research:
-  rounds: 2
-  initial_prompt: "Decris le produit, la cible et les contraintes (langue, ton, domaine)."
+  - name: "Planneur Stratégique"
+    role: "Ancre les idées dans la réalité : cohérence avec la marque, pertinence cible, faisabilité et impact mesurable"
+    provider: "ollama"
+    model: "gpt-oss:20b"
+    temperature: 0.6
+    is_leader: false
+    base_url: "http://192.168.1.12:1234"
 
-  system_prompt: "Tu participes a une recherche de naming structuree. Sois creatif mais strategique."
-
-  leader_prompt: "En tant que strategiste, valide la coherence entre le nom et le positionnement."
+debate:
+  rounds: 3
+  initial_prompt: "Concevoir une campagne de lancement pour une sneaker éco-responsable ciblant les 18-30 ans urbains"
+  system_prompt: "Tu participes à une session de création marketing. Sois concis, visuel dans tes descriptions et justifie tes propositions créatives."
+  leader_prompt: "En tant que directeur de création, assure-toi que les concepts sont variés, différenciants et exploitables sur plusieurs canaux."
 
   intro_prompt: |
-    Reformule la proposition de valeur.
-    Definis :
-    - Cible principale
-    - Emotion a transmettre
-    - Univers lexical pertinent
+    Tu es le directeur de création d'une session de brainstorming marketing. Présente clairement le brief suivant,
+    cadre les critères d'une bonne idée créative (singularité, pertinence cible, potentiel viral, cohérence de marque)
+    et lance la session en invitant les participants à pitcher leurs premières directions créatives :
 
-  round_header_template: "Tour {round_num} — Propositions de noms :"
+    BRIEF : {initial_prompt}
+
+  moderator_context_prefix: "Le directeur de création a dit :\n{content}"
+
+  round_header_template: "Tour {round_num} — Concepts et directions créatives :"
 
   intervention_prompt: >-
-    Selectionne les meilleures propositions.
-    Elimine celles qui sont trop generiques ou ambiguës.
-    Oriente vers une shortlist coherente.
+    En tant que directeur de création, fais la synthèse des concepts proposés ce tour,
+    identifie les directions les plus prometteuses et celles trop convenues ou risquées,
+    puis challenge le prochain tour avec une nouvelle contrainte créative ou un territoire
+    inexploré à investiguer.
 
   intervention_last_prompt: >-
-    Produis une shortlist finale de 5 noms maximum.
-    Pour chaque nom :
-    - Signification
-    - Positionnement
-    - Points forts
-    - Risques eventuels
+    En tant que directeur de création, fais une synthèse complète des concepts proposés ce tour.
+    Identifie les idées fortes, les tensions créatives intéressantes et les combinaisons possibles
+    entre les propositions.
 
   conclusion_prompt: |
-    Description initiale : {initial_prompt}
+    Brief créatif : {initial_prompt}
 
-    Historique des propositions :
+    Voici l'ensemble des concepts et échanges de la session :
+
     {turns}
 
-    Fournis une recommandation finale :
-    - Nom recommande
-    - Justification strategique
-    - Variante alternative
+    En tant que directeur de création, établis une synthèse créative finale :
+    présente les 3 directions créatives retenues avec pour chacune un titre accrocheur,
+    un concept en deux phrases, les canaux privilegiés et le territoire émotionnel visé.
+    Puis recommande la direction principale en justifiant ce choix stratégique.
+
+  continuation_prompt: |
+    Tu viens d'animer une session créative pour : "{initial_prompt}".
+
+    Voici ta sélection créative finale :
+    {conclusion_text}
+
+    Propose une seule question de suivi courte et précise pour approfondir ou valider
+    la direction retenue (ex : test concept, déclinaison saisonnière, adaptation internationale...).
+    Réponds uniquement avec la question, sans introduction ni explication.
+
+  previous_debate_label: "[Synthèse de la session créative précédente sur \"{initial_prompt}\"]"
+
+  previous_context_label: "[Contexte — session créative précédente sur \"{initial_prompt}\"]"
 
   agent_identity_template: "Tu es {name}. {role}"
 
   agent_context_template: |
-    Propositions precedentes :
+    Contexte des autres participants :
     {context}
 
-    Description du produit :
-    {prompt}
+    Brief : {prompt}

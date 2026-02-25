@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 from textual.app import App, ComposeResult, ScreenStackError
 from textual.containers import Vertical, ScrollableContainer, Horizontal, Center, Middle
-from textual.widgets import Footer, Static, Button, Label, Markdown, Input
+from textual.widgets import Footer, Static, Button, Label, Markdown, Input, TextArea
 from textual.binding import Binding
 from textual import work
 from textual.message import Message
@@ -18,6 +18,7 @@ from src.config import MeetingConfig
 # ---------------------------------------------------------------------------
 # Round picker widget
 # ---------------------------------------------------------------------------
+
 
 class RoundPicker(Widget):
     """Clickable 1-10 number line. The active number is highlighted."""
@@ -91,11 +92,12 @@ class RoundPicker(Widget):
 # Centered welcome screen (OpenCode / Claude Code style)
 # ---------------------------------------------------------------------------
 
+
 class WelcomeScreen(Screen):
     """Full-screen centered question display, shown at launch."""
 
     BINDINGS = [
-        Binding("enter", "start", "Start", show=True),
+        Binding("ctrl+enter", "start", "Start", show=True),
         Binding("escape", "quit", "Quit", show=True),
     ]
 
@@ -131,6 +133,7 @@ class WelcomeScreen(Screen):
         border: tall $accent;
         background: $surface;
         margin-bottom: 2;
+        height: 5;
     }
 
     #rounds-row {
@@ -174,9 +177,8 @@ class WelcomeScreen(Screen):
                         "What question to submit to the debate?",
                         id="welcome-subtitle",
                     )
-                    yield Input(
-                        value=self.config.debate.initial_prompt,
-                        placeholder="Enter the debate question...",
+                    yield TextArea(
+                        text=self.config.debate.initial_prompt,
                         id="question-input",
                     )
                     with Horizontal(id="rounds-row"):
@@ -187,26 +189,22 @@ class WelcomeScreen(Screen):
                         )
                     yield Static("", id="welcome-error")
                     yield Static(
-                        "[dim]Enter to start · Escape to quit[/dim]",
+                        "[dim]Ctrl+Enter to start · Escape to quit[/dim]",
                         id="welcome-hint",
                     )
         yield Footer()
 
     def on_mount(self) -> None:
-        inp = self.query_one("#question-input", Input)
+        inp = self.query_one("#question-input", TextArea)
         inp.focus()
-        inp.cursor_position = len(inp.value)
-
-    def on_input_submitted(self, event: Input.Submitted) -> None:
-        self.action_start()
 
     def action_start(self) -> None:
         error = self.query_one("#welcome-error", Static)
 
-        question = self.query_one("#question-input", Input).value.strip()
+        question = self.query_one("#question-input", TextArea).text.strip()
         if not question:
             error.update("[red]The question cannot be empty.[/red]")
-            self.query_one("#question-input", Input).focus()
+            self.query_one("#question-input", TextArea).focus()
             return
 
         rounds = self.query_one("#rounds-picker", RoundPicker).value
@@ -224,12 +222,20 @@ class WelcomeScreen(Screen):
 # AgentCard
 # ---------------------------------------------------------------------------
 
+
 class AgentCard(Widget):
     """Card for an agent with their Markdown response."""
 
     can_focus = False
 
-    def __init__(self, agent_name: str, agent_role: str = "", agent_model: str = "", is_leader: bool = False, **kwargs):
+    def __init__(
+        self,
+        agent_name: str,
+        agent_role: str = "",
+        agent_model: str = "",
+        is_leader: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.agent_name = agent_name
         self.agent_role = agent_role
@@ -299,6 +305,7 @@ class AgentCard(Widget):
 # ---------------------------------------------------------------------------
 # File name input screen
 # ---------------------------------------------------------------------------
+
 
 class FilenameScreen(Screen):
     """Modal for entering the save file name."""
@@ -394,6 +401,7 @@ class FilenameScreen(Screen):
 # Message bridge
 # ---------------------------------------------------------------------------
 
+
 class DebateEventMessage(Message):
     """Textual message transporting a DebateEvent."""
 
@@ -405,6 +413,7 @@ class DebateEventMessage(Message):
 # ---------------------------------------------------------------------------
 # Debate continuation screen
 # ---------------------------------------------------------------------------
+
 
 class ContinueScreen(Screen):
     """Modal for entering the continuation question proposed by the leader."""
@@ -468,7 +477,9 @@ class ContinueScreen(Screen):
                 with Vertical(id="continue-box"):
                     yield Static("Continue the debate", id="continue-title")
                     yield Static(
-                        "[dim]The moderator is preparing a follow-up question...[/dim]" if self._loading else "[dim]The moderator suggests:[/dim]",
+                        "[dim]The moderator is preparing a follow-up question...[/dim]"
+                        if self._loading
+                        else "[dim]The moderator suggests:[/dim]",
                         id="continue-subtitle",
                     )
                     yield Input(
@@ -518,6 +529,7 @@ class ContinueScreen(Screen):
 # ---------------------------------------------------------------------------
 # Debate screen
 # ---------------------------------------------------------------------------
+
 
 class DebateScreen(Screen):
     """Main debate screen — shown after question validation."""
@@ -646,7 +658,9 @@ class DebateScreen(Screen):
                         for c in agent_config.name
                     )
                     model_str = f"{agent_config.provider} / {agent_config.model}"
-                    card = AgentCard(agent_config.name, agent_config.role or "", model_str, id=safe_id)
+                    card = AgentCard(
+                        agent_config.name, agent_config.role or "", model_str, id=safe_id
+                    )
                     self.agent_cards[agent_config.name] = card
                     self._agent_container[agent_config.name] = "#agents_col_left"
                     yield card
@@ -658,7 +672,9 @@ class DebateScreen(Screen):
                         for c in agent_config.name
                     )
                     model_str = f"{agent_config.provider} / {agent_config.model}"
-                    card = AgentCard(agent_config.name, agent_config.role or "", model_str, id=safe_id)
+                    card = AgentCard(
+                        agent_config.name, agent_config.role or "", model_str, id=safe_id
+                    )
                     self.agent_cards[agent_config.name] = card
                     self._agent_container[agent_config.name] = "#agents_col_right"
                     yield card
@@ -730,7 +746,11 @@ class DebateScreen(Screen):
             try:
                 status = self.query_one("#status", Label)
                 elapsed = self._elapsed_str()
-                round_info = f"Round {self._current_round}/{self._total_rounds}" if self._current_round > 0 else "Intro"
+                round_info = (
+                    f"Round {self._current_round}/{self._total_rounds}"
+                    if self._current_round > 0
+                    else "Intro"
+                )
                 phase_display = self._current_phase_display
                 status.update(f"[cyan]{round_info} · {phase_display} · {elapsed}[/cyan]")
             except Exception:
@@ -847,7 +867,10 @@ class DebateScreen(Screen):
             # Show the hint banner and activate the "c" binding in the footer
             try:
                 hint = self.query_one("#continue-hint", Label)
-                hint.update("Debate ended — press [bold]c[/bold] to continue with the suggested question")
+                hint.update(
+                    "Debate ended — press [bold]c[/bold] to continue with the suggested question"
+                    " · press [bold]+[/bold] to add one more round"
+                )
                 hint.display = True
             except Exception:
                 pass
@@ -880,8 +903,8 @@ class DebateScreen(Screen):
         leader_scroll.display = not leader_scroll.display
 
     def check_action(self, action: str, parameters: tuple) -> bool | None:
-        """Disable 'continue_debate' action until the debate is finished."""
-        if action == "continue_debate":
+        """Disable 'continue_debate' and 'add_round' actions until the debate is finished."""
+        if action in ("continue_debate", "add_round"):
             return self._debate_ended
         return True
 
@@ -894,6 +917,36 @@ class DebateScreen(Screen):
         self.app.push_screen(screen, self._on_continue_chosen)
         if self._continuation_question:
             screen.set_question(self._continuation_question)
+
+    def action_add_round(self) -> None:
+        """Add one extra round to the current debate without changing the question."""
+        if not self._debate_ended or self.debate_manager is None:
+            return
+
+        # Prepare the manager
+        self.debate_manager.add_round()
+
+        # Update TUI state
+        self._debate_ended = False
+        self._continuation_question = ""
+        self._continue_screen = None
+        self._total_rounds = self.config.debate.rounds
+        self._start_time = None
+
+        # Hide the continuation hint
+        try:
+            self.query_one("#continue-hint", Label).display = False
+        except Exception:
+            pass
+
+        # Refresh bindings
+        try:
+            self.app.refresh_bindings()
+        except Exception:
+            pass
+
+        # Restart the debate
+        self.start_debate()
 
     def _on_continue_chosen(self, question: str | None) -> None:
         self._continue_screen = None
@@ -915,9 +968,7 @@ class DebateScreen(Screen):
 
         # Update question banner
         try:
-            self.query_one("#question-banner", Label).update(
-                f"[dim]{question}[/dim]"
-            )
+            self.query_one("#question-banner", Label).update(f"[dim]{question}[/dim]")
         except Exception:
             pass
 
@@ -983,6 +1034,7 @@ class DebateScreen(Screen):
 # Main application
 # ---------------------------------------------------------------------------
 
+
 class AgentsMeetingApp(App):
     """Main application."""
 
@@ -991,6 +1043,7 @@ class AgentsMeetingApp(App):
         Binding("m", "toggle_leader", "Moderator", show=True),
         Binding("w", "save_debate", "Save", show=True),
         Binding("c", "continue_debate", "Continue", show=True),
+        Binding("plus", "add_round", "+1 Round", show=True),
         Binding("r", "new_question", "New question", show=True),
     ]
 
@@ -1020,6 +1073,11 @@ class AgentsMeetingApp(App):
         screen = self.screen
         if isinstance(screen, DebateScreen):
             screen.action_continue_debate()
+
+    def action_add_round(self) -> None:
+        screen = self.screen
+        if isinstance(screen, DebateScreen):
+            screen.action_add_round()
 
     def action_save_debate(self) -> None:
         screen = self.screen

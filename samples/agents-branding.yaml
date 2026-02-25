@@ -1,0 +1,98 @@
+title: "Recherche de marque - Naming strategique avance"
+
+agents:
+  - name: "Brand Strategist"
+    role: "Definit le positionnement, la promesse centrale et les criteres strategiques de la marque"
+    provider: "ollama"
+    model: "gpt-oss:20b"
+    temperature: 0.5
+    is_leader: true
+    base_url: "http://192.168.1.12:1234"
+
+  - name: "Naming Expert"
+    role: "Genere des noms distinctifs, memorables et alignes avec la strategie"
+    provider: "ollama"
+    model: "translategemma"
+    temperature: 0.9
+    is_leader: false
+    base_url: "http://192.168.1.12:1234"
+
+  - name: "Brand Analyst"
+    role: "Evalue la clarte, la prononcabilite, la disponibilite potentielle et les risques de confusion"
+    provider: "ollama"
+    model: "gpt-oss:20b"
+    temperature: 0.4
+    is_leader: false
+    base_url: "http://192.168.1.12:1234"
+
+debate:
+  rounds: 3
+
+  initial_prompt: >
+    Decris le produit, le marche cible, la proposition de valeur,
+    la personnalite souhaitee et les contraintes (langue, ton, international, etc.).
+
+  system_prompt: >
+    Tu participes a une recherche de marque structuree.
+    Les noms doivent etre strategiques, differenciants et exploitables commercialement.
+
+  leader_prompt: >
+    En tant que Brand Strategist, veille a la coherence entre le nom,
+    le positionnement et la strategie long terme.
+
+  intro_prompt: |
+    Tu es le directeur créatif d'une session de naming. Présente clairement le produit décrit
+    ci-dessous, rappelle les critères d'un bon nom (mémorabilité, accessibilité, évocation,
+    adéquation avec la cible) et lance la session en invitant les participants à soumettre
+    leurs premières propositions de noms :
+
+    PRODUIT À NOMMER : {initial_prompt}
+
+
+  round_header_template: "Iteration {round_num} — Exploration naming :"
+
+  intervention_prompt: >-
+    Analyse les propositions.
+    Classe-les par categorie (descriptif, evocateur, invente, metaphorique).
+    Elimine les noms faibles (trop generiques, difficiles a prononcer, confus).
+    Oriente vers un territoire distinctif clair.
+
+  intervention_last_prompt: >-
+    Produis une shortlist finale de 5 noms maximum.
+    Pour chaque nom, fournis :
+    - Type de nom (descriptif, evocateur, invente, hybride)
+    - Signification
+    - Perception probable
+    - Points forts marketing
+    - Risques potentiels
+    - Potentiel d'extension de gamme
+
+  conclusion_prompt: |
+    Brief initial :
+    {initial_prompt}
+
+    Historique complet :
+    {turns}
+
+    En tant que Brand Strategist, fais une recommandation finale :
+    - Nom recommande
+    - Justification strategique detaillee
+    - Positionnement associe
+    - Signature / tagline suggeree
+    - Variante alternative solide
+
+  continuation_prompt: |
+    A partir du nom recommande, propose :
+    - 3 slogans courts
+    - 1 pitch de 2 phrases
+    - 1 axe visuel (univers graphique suggere)
+
+  agent_identity_template: "Tu es {name}. {role}"
+
+  agent_context_template: |
+    Contexte precedent :
+    {context}
+
+    Brief marque :
+    {prompt}
+

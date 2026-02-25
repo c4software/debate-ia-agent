@@ -231,6 +231,30 @@ class DebateManager:
 
         self._emit("continuation_suggestion", 0, "end", self.leader.config.name, question)
 
+    def add_round(self) -> None:
+        """Add one extra round to the debate, continuing with the same question and context.
+
+        - All agents retain their LLM history and turns.
+        - The leader's final synthesis is injected as the starting context for the new round.
+        - The debate round counter is incremented by 1.
+        """
+        # Inject the final synthesis as starting context for the new round
+        conclusion_turns = [t for t in self.leader.turns if t.phase == "conclusion"] if self.leader else []
+        conclusion_text = conclusion_turns[-1].content if conclusion_turns else self._leader_last_content
+
+        if conclusion_text:
+            context_label = self.config.debate.previous_context_label.format(
+                initial_prompt=self.config.debate.initial_prompt,
+            )
+            self._leader_last_content = f"{context_label}\n{conclusion_text}"
+
+        # Add one extra round
+        self.config.debate.rounds += 1
+
+        # Reset internal manager state without touching agent histories
+        self._cancelled = False
+        self._current_phase = ""
+
     def continue_with(self, new_prompt: str) -> None:
         """Prepare a continuation of the debate with a new question.
 

@@ -1,74 +1,96 @@
-title: "Recherche technique - Analyse de probleme de code"
+title: "Recherche de problème dans du code"
 
 agents:
-  - name: "Architecte"
-    role: "Structure le probleme, clarifie le contexte technique et priorise les pistes"
+  - name: "Tech Lead"
+    role: "Anime la session de debug, synthétise les hypothèses et oriente vers la cause racine"
     provider: "ollama"
     model: "gpt-oss:20b"
     temperature: 0.3
     is_leader: true
     base_url: "http://192.168.1.12:1234"
 
-  - name: "Debugueur"
-    role: "Analyse le code ligne par ligne, identifie les erreurs logiques et les edge cases"
+  - name: "Analyste"
+    role: "Explore les causes possibles en profondeur, propose des hypothèses techniques précises et des scénarios de reproduction"
     provider: "ollama"
-    model: "gpt-oss:20b"
-    temperature: 0.2
+    model: "translategemma"
+    temperature: 0.5
     is_leader: false
     base_url: "http://192.168.1.12:1234"
 
-  - name: "Optimisateur"
-    role: "Propose des ameliorations de performance, de lisibilite et de robustesse"
+  - name: "Avocat du Diable"
+    role: "Remet en question les hypothèses émises, cherche les angles morts, les edge cases et les causes non évidentes"
     provider: "ollama"
     model: "gpt-oss:20b"
-    temperature: 0.4
+    temperature: 0.6
     is_leader: false
     base_url: "http://192.168.1.12:1234"
 
-research:
+debate:
   rounds: 3
-  initial_prompt: "Decris ton probleme technique et colle le code concerne."
-
-  system_prompt: "Tu participes a une analyse technique structuree. Sois precis, factuel et base sur le code fourni."
-
-  leader_prompt: "En tant qu'architecte, clarifie les hypotheses et oriente l'analyse vers un diagnostic concret."
+  initial_prompt: |
+    Langage : Python 3.11
+    Symptôme : une API FastAPI retourne aléatoirement des réponses 200 vides au lieu des données attendues
+    Contexte : le problème apparaît uniquement en production sous charge, jamais en local
+    Stack : FastAPI + SQLAlchemy async + PostgreSQL + Redis (cache)
+  system_prompt: "Tu participes à une session de debug structurée. Sois précis, technique et cite des causes concrètes vérifiables. Évite les généralités."
+  leader_prompt: "En tant que tech lead, assure-toi que toutes les couches de la stack sont examinées et que les hypothèses sont priorisées par probabilité."
 
   intro_prompt: |
-    Tu es l'architecte technique.
-    Reformule le probleme, identifie les informations manquantes
-    et liste les hypotheses techniques possibles.
+    Tu es le tech lead d'une session de debug. Présente clairement le problème suivant,
+    identifie les couches techniques à investiguer en priorité
+    et lance la session en demandant aux participants leurs premières hypothèses :
 
-  round_header_template: "Iteration {round_num} — Analyse technique :"
+    PROBLÈME : {initial_prompt}
+
+  moderator_context_prefix: "Le tech lead a dit :\n{content}"
+
+  round_header_template: "Tour {round_num} — Hypothèses et pistes d'investigation :"
 
   intervention_prompt: >-
-    Fais la synthese des hypotheses techniques.
-    Elimine celles qui sont improbables.
-    Oriente l'analyse vers les tests ou corrections a effectuer.
+    En tant que tech lead, fais la synthèse des hypothèses émises ce tour,
+    classe-les par probabilité (haute / moyenne / faible),
+    écarte celles qui ont été invalidées par le raisonnement collectif,
+    puis oriente le prochain tour vers la piste la plus sérieuse avec une question
+    d'investigation précise.
 
   intervention_last_prompt: >-
-    Produis un diagnostic final clair :
-    - Cause probable
-    - Explication technique
-    - Correctif propose
-    - Ameliorations optionnelles
+    En tant que tech lead, fais une synthèse complète des hypothèses de ce tour.
+    Identifie celles qui se recoupent, celles qui s'opposent,
+    et les zones d'ombre qui n'ont pas encore été explorées.
 
   conclusion_prompt: |
-    Probleme initial : {initial_prompt}
+    Problème analysé : {initial_prompt}
 
-    Historique des analyses :
+    Voici l'ensemble des hypothèses et échanges de la session :
+
     {turns}
 
-    Fournis un rapport final structure :
-    - Resume du probleme
-    - Cause racine
-    - Solution detaillee
-    - Bonnes pratiques pour eviter le probleme
+    En tant que tech lead, établis un rapport de debug final structuré :
+
+    1. CAUSE RACINE PROBABLE — la plus vraisemblable avec justification
+    2. CAUSES SECONDAIRES — à ne pas exclure
+    3. ÉTAPES DE VÉRIFICATION — comment confirmer ou infirmer la cause racine (logs, requêtes, outils)
+    4. CORRECTIONS SUGGÉRÉES — pistes de fix concrètes et priorisées
+    5. PRÉVENTION — ce qui aurait pu détecter ce problème plus tôt
+
+  continuation_prompt: |
+    Tu viens d'animer une session de debug pour : "{initial_prompt}".
+
+    Voici ton rapport final :
+    {conclusion_text}
+
+    Propose une seule question de suivi courte et précise pour confirmer la cause racine
+    ou valider le fix envisagé.
+    Réponds uniquement avec la question, sans introduction ni explication.
+
+  previous_debate_label: "[Synthèse de la session de debug précédente sur \"{initial_prompt}\"]"
+
+  previous_context_label: "[Contexte — session de debug précédente sur \"{initial_prompt}\"]"
 
   agent_identity_template: "Tu es {name}. {role}"
 
   agent_context_template: |
-    Analyse des autres agents :
+    Contexte des autres participants :
     {context}
 
-    Probleme technique :
-    {prompt}
+    Problème à investiguer : {prompt}
