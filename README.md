@@ -143,27 +143,27 @@ debate:
 
 #### api_keys
 
-| Paramètre   | Type   | Description                           |
-| ----------- | ------ | ------------------------------------- |
-| `openai`    | string | Clé API OpenAI (ou `env:VARIABLE`)    |
-| `anthropic` | string | Clé API Anthropic (ou `env:VARIABLE`) |
+| Paramètre   | Type   | Description                               |
+| ----------- | ------ | ----------------------------------------- |
+| `openai`    | string | Clé API OpenAI (ou `env:VARIABLE`)        |
+| `anthropic` | string | Clé API Anthropic (ou `env:VARIABLE`)     |
 | `gemini`    | string | Clé API Google Gemini (ou `env:VARIABLE`) |
-| `ollama`    | string | URL du serveur Ollama                 |
-| `custom`    | string | Clé API custom (ou `env:VARIABLE`)    |
+| `ollama`    | string | URL du serveur Ollama                     |
+| `custom`    | string | Clé API custom (ou `env:VARIABLE`)        |
 
 #### agents[]
 
-| Paramètre     | Type    | Description                                  | Défaut   |
-| ------------- | ------- | -------------------------------------------- | -------- |
-| `name`        | string  | Nom de l'agent                               | -        |
-| `role`        | string  | Rôle/description de l'agent                  | -        |
+| Paramètre     | Type    | Description                                         | Défaut   |
+| ------------- | ------- | --------------------------------------------------- | -------- |
+| `name`        | string  | Nom de l'agent                                      | -        |
+| `role`        | string  | Rôle/description de l'agent                         | -        |
 | `provider`    | string  | `openai`, `anthropic`, `gemini`, `ollama`, `custom` | -        |
-| `model`       | string  | Modèle à utiliser                            | `gpt-4o` |
-| `temperature` | float   | Température (0.0-2.0)                        | 0.7      |
-| `max_tokens`  | int     | Limite de tokens                             | -        |
-| `api_key`     | string  | Clé API locale (ou `env:VARIABLE`)           | -        |
-| `base_url`    | string  | URL de l'API (remplace la valeur par défaut) | -        |
-| `is_leader`   | boolean | Agent leader/modérateur                      | `false`  |
+| `model`       | string  | Modèle à utiliser                                   | `gpt-4o` |
+| `temperature` | float   | Température (0.0-2.0)                               | 0.7      |
+| `max_tokens`  | int     | Limite de tokens                                    | -        |
+| `api_key`     | string  | Clé API locale (ou `env:VARIABLE`)                  | -        |
+| `base_url`    | string  | URL de l'API (remplace la valeur par défaut)        | -        |
+| `is_leader`   | boolean | Agent leader/modérateur                             | `false`  |
 
 #### debate
 
@@ -173,19 +173,19 @@ debate:
 | `initial_prompt`           | string | Question/prompt initial                                                                      | -      |
 | `system_prompt`            | string | System prompt global (injecté dans tous les agents)                                          | -      |
 | `leader_prompt`            | string | Instructions supplémentaires pour le leader uniquement                                       | -      |
-| `intro_prompt`             | string | Prompt d'ouverture du débat. Variable : `{initial_prompt}`                                   | (EN)   |
-| `moderator_context_prefix` | string | Préfixe du contexte modérateur injecté dans les agents. Variable : `{content}`               | (EN)   |
-| `round_header_template`    | string | En-tête de chaque tour dans le prompt du leader. Variable : `{round_num}`                    | (EN)   |
-| `intervention_prompt`      | string | Instruction de synthèse pour les tours intermédiaires                                        | (EN)   |
-| `intervention_last_prompt` | string | Instruction de synthèse pour le dernier tour                                                 | (EN)   |
-| `conclusion_prompt`        | string | Prompt de synthèse finale. Variables : `{initial_prompt}`, `{turns}`                         | (EN)   |
-| `continuation_prompt`      | string | Prompt de question de suivi. Variables : `{initial_prompt}`, `{conclusion_text}`             | (EN)   |
-| `previous_debate_label`    | string | Étiquette injectée dans l'historique du leader (continuation). Variable : `{initial_prompt}` | (EN)   |
-| `previous_context_label`   | string | Étiquette de contexte pour les agents (continuation). Variable : `{initial_prompt}`          | (EN)   |
-| `agent_identity_template`  | string | Template d'identité de l'agent dans le system prompt. Variables : `{name}`, `{role}`         | (EN)   |
-| `agent_context_template`   | string | Template du message utilisateur avec contexte. Variables : `{context}`, `{prompt}`           | (EN)   |
+| `intro_prompt`             | string | Prompt d'ouverture du débat. Variable : `{initial_prompt}`                                   | `"You are the moderator of a debate. Present the following topic clearly, frame the issues and ask the initial questions that participants must answer:\n\nTOPIC: {initial_prompt}"` |
+| `moderator_context_prefix` | string | Préfixe du contexte modérateur injecté dans les agents. Variable : `{content}`               | `"The moderator said:\n{content}"` |
+| `round_header_template`    | string | En-tête de chaque tour dans le prompt du leader. Variable : `{round_num}`                    | `"Round {round_num} — Participant responses:"` |
+| `intervention_prompt`      | string | Instruction de synthèse pour les tours intermédiaires                                        | `"As moderator, synthesize the positions expressed this round, identify points of convergence and divergence, then ask a refined question to deepen the debate for the next round."` |
+| `intervention_last_prompt` | string | Instruction de synthèse pour le dernier tour                                                 | `"As moderator, provide a complete synthesis of the positions expressed this round. Identify points of convergence and divergence."` |
+| `conclusion_prompt`        | string | Prompt de synthèse finale. Variables : `{initial_prompt}`, `{turns}`                         | `"Original question: {initial_prompt}\n\nHere are all participant interventions across all rounds:\n\n{turns}\n\nAs moderator, provide a balanced final synthesis of the debate: summarize the main positions, points of agreement and disagreement, and propose a general conclusion."` |
+| `continuation_prompt`      | string | Prompt de question de suivi. Variables : `{initial_prompt}`, `{conclusion_text}`             | `"You just moderated a debate on the topic: \"{initial_prompt}\".\n\nHere is your final synthesis:\n{conclusion_text}\n\nPropose only one short and precise follow-up question that would deepen or broaden the debate. Respond only with the question, without introduction or explanation."` |
+| `previous_debate_label`    | string | Étiquette injectée dans l'historique du leader (continuation). Variable : `{initial_prompt}` | `"[Synthesis of previous debate on \"{initial_prompt}\"]"` |
+| `previous_context_label`   | string | Étiquette de contexte pour les agents (continuation). Variable : `{initial_prompt}`          | `"[Context — previous debate on \"{initial_prompt}\"]"` |
+| `agent_identity_template`  | string | Template d'identité de l'agent dans le system prompt. Variables : `{name}`, `{role}`         | `"You are {name}. {role}"` |
+| `agent_context_template`   | string | Template du message utilisateur avec contexte. Variables : `{context}`, `{prompt}`           | `"Other agents' context:\n{context}\n\nQuestion: {prompt}"` |
 
-> **(EN)** = valeur par défaut en anglais définie dans le code. Surcharger dans le YAML pour utiliser une autre langue (voir `agents-meeting.example.yaml`).
+> Les valeurs par défaut des templates de prompts sont en anglais (définies dans le code). Surcharger dans le YAML pour utiliser une autre langue (voir `agents-meeting.example.yaml`).
 
 ## Providers
 
@@ -193,7 +193,7 @@ debate:
 | --------- | -------------------------------------------------- |
 | OpenAI    | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc.           |
 | Anthropic | `claude-3-5-sonnet-*`, `claude-3-opus-*`, etc.     |
-| Gemini    | `gemini-2.0-flash`, `gemini-1.5-pro`, etc.        |
+| Gemini    | `gemini-2.0-flash`, `gemini-1.5-pro`, etc.         |
 | Ollama    | Modèles locaux (`llama3`, `mistral`, `phi3`, etc.) |
 | Custom    | API compatible OpenAI                              |
 
@@ -250,6 +250,19 @@ debate:
   initial_prompt: "L'IA va-t-elle remplacer les développeurs ?"
   system_prompt: "Tu participes à un débat structuré. Sois concis et argumenté."
   leader_prompt: "En tant que modérateur, assure-toi que tous les points de vue sont exprimés."
+
+  # Templates de prompts (optionnels, valeurs par défaut en anglais). Voir `agents-meeting.example.yaml` pour un exemple en français.
+  intro_prompt: "Tu es le modérateur d'un débat. [...] SUJET : {initial_prompt}"
+  moderator_context_prefix: "Le modérateur a dit :\n{content}"
+  round_header_template: "Tour {round_num} — Réponses des participants :"
+  intervention_prompt: "En tant que modérateur, fais la synthèse..."
+  intervention_last_prompt: "En tant que modérateur, fais une synthèse complète..."
+  conclusion_prompt: "Question initiale : {initial_prompt}\n\n{turns}\n\n..."
+  continuation_prompt: "Tu viens de modérer un débat sur : \"{initial_prompt}\"...\n{conclusion_text}"
+  previous_debate_label: '[Synthèse du débat précédent sur "{initial_prompt}"]'
+  previous_context_label: '[Contexte — débat précédent sur "{initial_prompt}"]'
+  agent_identity_template: "Tu es {name}. {role}"
+  agent_context_template: "Contexte des autres agents :\n{context}\n\nQuestion : {prompt}"
 ```
 
 ## Variables d'environnement
@@ -393,7 +406,7 @@ debate:
   system_prompt: "Optional system prompt for all agents"
   leader_prompt: "Additional instructions for the leader"
 
-  # Prompt templates (optional, English defaults built-in)
+  # Prompt templates (optional, English defaults built-in), voir `agents-meeting.example.yaml` for a French example
   intro_prompt: "You are the moderator of a debate. [...] TOPIC: {initial_prompt}"
   moderator_context_prefix: "The moderator said:\n{content}"
   round_header_template: "Round {round_num} — Participant responses:"
@@ -417,27 +430,27 @@ debate:
 
 #### api_keys
 
-| Parameter   | Type   | Description                             |
-| ----------- | ------ | --------------------------------------- |
-| `openai`    | string | OpenAI API key (or `env:VARIABLE`)      |
-| `anthropic` | string | Anthropic API key (or `env:VARIABLE`)  |
+| Parameter   | Type   | Description                               |
+| ----------- | ------ | ----------------------------------------- |
+| `openai`    | string | OpenAI API key (or `env:VARIABLE`)        |
+| `anthropic` | string | Anthropic API key (or `env:VARIABLE`)     |
 | `gemini`    | string | Google Gemini API key (or `env:VARIABLE`) |
-| `ollama`    | string | Ollama server URL                       |
-| `custom`    | string | Custom API key (or `env:VARIABLE`)      |
+| `ollama`    | string | Ollama server URL                         |
+| `custom`    | string | Custom API key (or `env:VARIABLE`)        |
 
 #### agents[]
 
-| Parameter     | Type    | Description                               | Default  |
-| ------------- | ------- | ----------------------------------------- | -------- |
-| `name`        | string  | Agent name                                | -        |
-| `role`        | string  | Role/description of the agent             | -        |
+| Parameter     | Type    | Description                                         | Default  |
+| ------------- | ------- | --------------------------------------------------- | -------- |
+| `name`        | string  | Agent name                                          | -        |
+| `role`        | string  | Role/description of the agent                       | -        |
 | `provider`    | string  | `openai`, `anthropic`, `gemini`, `ollama`, `custom` | -        |
-| `model`       | string  | Model to use                              | `gpt-4o` |
-| `temperature` | float   | Temperature (0.0-2.0)                     | 0.7      |
-| `max_tokens`  | int     | Token limit                               | -        |
-| `api_key`     | string  | Local API key (or `env:VARIABLE`)         | -        |
-| `base_url`    | string  | API URL (replaces default value)          | -        |
-| `is_leader`   | boolean | Leader/moderator agent                    | `false`  |
+| `model`       | string  | Model to use                                        | `gpt-4o` |
+| `temperature` | float   | Temperature (0.0-2.0)                               | 0.7      |
+| `max_tokens`  | int     | Token limit                                         | -        |
+| `api_key`     | string  | Local API key (or `env:VARIABLE`)                   | -        |
+| `base_url`    | string  | API URL (replaces default value)                    | -        |
+| `is_leader`   | boolean | Leader/moderator agent                              | `false`  |
 
 #### debate
 
@@ -447,19 +460,19 @@ debate:
 | `initial_prompt`           | string | Initial question/prompt                                                            | -       |
 | `system_prompt`            | string | Global system prompt (injected into all agents)                                    | -       |
 | `leader_prompt`            | string | Additional instructions for the leader only                                        | -       |
-| `intro_prompt`             | string | Debate opening prompt. Variable: `{initial_prompt}`                                | (EN)    |
-| `moderator_context_prefix` | string | Moderator context prefix injected into agents. Variable: `{content}`               | (EN)    |
-| `round_header_template`    | string | Header line in the leader's intervention prompt. Variable: `{round_num}`           | (EN)    |
-| `intervention_prompt`      | string | Synthesis instruction for mid-debate rounds                                        | (EN)    |
-| `intervention_last_prompt` | string | Synthesis instruction for the final round                                          | (EN)    |
-| `conclusion_prompt`        | string | Final synthesis prompt. Variables: `{initial_prompt}`, `{turns}`                   | (EN)    |
-| `continuation_prompt`      | string | Follow-up question prompt. Variables: `{initial_prompt}`, `{conclusion_text}`      | (EN)    |
-| `previous_debate_label`    | string | Label injected into leader's history (continuation). Variable: `{initial_prompt}`  | (EN)    |
-| `previous_context_label`   | string | Context label for agents (continuation). Variable: `{initial_prompt}`              | (EN)    |
-| `agent_identity_template`  | string | Agent identity line in system prompt. Variables: `{name}`, `{role}`                | (EN)    |
-| `agent_context_template`   | string | User message template when context is provided. Variables: `{context}`, `{prompt}` | (EN)    |
+| `intro_prompt`             | string | Debate opening prompt. Variable: `{initial_prompt}`                                | `"You are the moderator of a debate. Present the following topic clearly, frame the issues and ask the initial questions that participants must answer:\n\nTOPIC: {initial_prompt}"` |
+| `moderator_context_prefix` | string | Moderator context prefix injected into agents. Variable: `{content}`               | `"The moderator said:\n{content}"` |
+| `round_header_template`    | string | Header line in the leader's intervention prompt. Variable: `{round_num}`           | `"Round {round_num} — Participant responses:"` |
+| `intervention_prompt`      | string | Synthesis instruction for mid-debate rounds                                        | `"As moderator, synthesize the positions expressed this round, identify points of convergence and divergence, then ask a refined question to deepen the debate for the next round."` |
+| `intervention_last_prompt` | string | Synthesis instruction for the final round                                          | `"As moderator, provide a complete synthesis of the positions expressed this round. Identify points of convergence and divergence."` |
+| `conclusion_prompt`        | string | Final synthesis prompt. Variables: `{initial_prompt}`, `{turns}`                   | `"Original question: {initial_prompt}\n\nHere are all participant interventions across all rounds:\n\n{turns}\n\nAs moderator, provide a balanced final synthesis of the debate: summarize the main positions, points of agreement and disagreement, and propose a general conclusion."` |
+| `continuation_prompt`      | string | Follow-up question prompt. Variables: `{initial_prompt}`, `{conclusion_text}`      | `"You just moderated a debate on the topic: \"{initial_prompt}\".\n\nHere is your final synthesis:\n{conclusion_text}\n\nPropose only one short and precise follow-up question that would deepen or broaden the debate. Respond only with the question, without introduction or explanation."` |
+| `previous_debate_label`    | string | Label injected into leader's history (continuation). Variable: `{initial_prompt}`  | `"[Synthesis of previous debate on \"{initial_prompt}\"]"` |
+| `previous_context_label`   | string | Context label for agents (continuation). Variable: `{initial_prompt}`              | `"[Context — previous debate on \"{initial_prompt}\"]"` |
+| `agent_identity_template`  | string | Agent identity line in system prompt. Variables: `{name}`, `{role}`                | `"You are {name}. {role}"` |
+| `agent_context_template`   | string | User message template when context is provided. Variables: `{context}`, `{prompt}` | `"Other agents' context:\n{context}\n\nQuestion: {prompt}"` |
 
-> **(EN)** = English default defined in code. Override in YAML to use a different language (see `agents-meeting.example.yaml`).
+> Default values for prompt templates are in English (defined in code). Override in YAML to use a different language (see `agents-meeting.example.yaml`).
 
 ## Providers
 
@@ -467,7 +480,7 @@ debate:
 | --------- | ------------------------------------------------ |
 | OpenAI    | `gpt-4o`, `gpt-4`, `gpt-3.5-turbo`, etc.         |
 | Anthropic | `claude-3-5-sonnet-*`, `claude-3-opus-*`, etc.   |
-| Gemini    | `gemini-2.0-flash`, `gemini-1.5-pro`, etc.        |
+| Gemini    | `gemini-2.0-flash`, `gemini-1.5-pro`, etc.       |
 | Ollama    | Local models (`llama3`, `mistral`, `phi3`, etc.) |
 | Custom    | OpenAI-compatible API                            |
 
