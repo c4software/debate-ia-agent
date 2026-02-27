@@ -35,7 +35,7 @@ agents:
 
 debate:
   rounds: 2
-  initial_prompt: "L'IA va-t-elle remplacer les developpeurs ?"
+  initial_prompt: "Notre avenir dépend-il de la technique ?"
   system_prompt: "Tu participes a un debat structure. Sois concis et argumente."
   leader_prompt: "En tant que moderateur, assure-toi que tous les points de vue sont exprimes."
 

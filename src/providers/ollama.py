@@ -26,7 +26,7 @@ class OllamaProvider(LLMProvider):
     @property
     def client(self) -> httpx.AsyncClient:
         if self._client is None:
-            self._client = httpx.AsyncClient(timeout=120.0)
+            self._client = httpx.AsyncClient(timeout=520.0)
         return self._client
 
     async def chat(
