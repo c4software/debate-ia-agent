@@ -4,7 +4,7 @@ agents:
   - name: "Tech Lead"
     role: "Anime la session de debug, synthétise les hypothèses et oriente vers la cause racine"
     provider: "ollama"
-    model: "gpt-oss:20b"
+    model: "qwen3.5:35b"
     temperature: 0.3
     is_leader: true
     base_url: "http://192.168.1.12:1234"
@@ -12,7 +12,7 @@ agents:
   - name: "Analyste"
     role: "Explore les causes possibles en profondeur, propose des hypothèses techniques précises et des scénarios de reproduction"
     provider: "ollama"
-    model: "translategemma"
+    model: "qwen3.5:35b"
     temperature: 0.5
     is_leader: false
     base_url: "http://192.168.1.12:1234"
@@ -20,7 +20,7 @@ agents:
   - name: "Avocat du Diable"
     role: "Remet en question les hypothèses émises, cherche les angles morts, les edge cases et les causes non évidentes"
     provider: "ollama"
-    model: "gpt-oss:20b"
+    model: "qwen3.5:35b"
     temperature: 0.6
     is_leader: false
     base_url: "http://192.168.1.12:1234"
