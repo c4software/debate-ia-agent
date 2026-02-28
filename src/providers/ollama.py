@@ -17,7 +17,7 @@ class OllamaProvider(LLMProvider):
         temperature: float = 0.7,
         max_tokens: int | None = None,
         base_url: str = "http://localhost:11434",
-        **kwargs: Any
+        **kwargs: Any,
     ):
         super().__init__(model, temperature, max_tokens, **kwargs)
         self.base_url = base_url.rstrip("/")
@@ -41,14 +41,8 @@ class OllamaProvider(LLMProvider):
             "stream": False,
         }
         if system_prompt:
-            payload["messages"].append({
-                "role": "system",
-                "content": system_prompt
-            })
-        payload["messages"].extend([
-            {"role": m.role, "content": m.content}
-            for m in messages
-        ])
+            payload["messages"].append({"role": "system", "content": system_prompt})
+        payload["messages"].extend([{"role": m.role, "content": m.content} for m in messages])
         if self.max_tokens:
             payload["options"] = {"num_predict": self.max_tokens}
 
@@ -60,7 +54,7 @@ class OllamaProvider(LLMProvider):
         data = response.json()
 
         return Response(
-            content=data["message"]["content"],
+            content=self.strip_thinking(data["message"]["content"]),
             model=data.get("model", self.model),
             raw_response=data,
         )
@@ -78,14 +72,8 @@ class OllamaProvider(LLMProvider):
             "stream": True,
         }
         if system_prompt:
-            payload["messages"].append({
-                "role": "system",
-                "content": system_prompt
-            })
-        payload["messages"].extend([
-            {"role": m.role, "content": m.content}
-            for m in messages
-        ])
+            payload["messages"].append({"role": "system", "content": system_prompt})
+        payload["messages"].extend([{"role": m.role, "content": m.content} for m in messages])
         if self.max_tokens:
             payload["options"] = {"num_predict": self.max_tokens}
 
@@ -95,6 +83,9 @@ class OllamaProvider(LLMProvider):
             json=payload,
         ) as response:
             response.raise_for_status()
+            buffer = ""
+            in_think = False
+            just_closed_think = False
             async for line in response.aiter_lines():
                 if line.strip():
                     try:
@@ -102,9 +93,36 @@ class OllamaProvider(LLMProvider):
                     except json.JSONDecodeError:
                         continue
                     if "message" in data and "content" in data["message"]:
-                        content = data["message"]["content"]
-                        if content:
-                            yield content
+                        chunk = data["message"]["content"]
+                        if not chunk:
+                            continue
+                        buffer += chunk
+                        while True:
+                            if in_think:
+                                end = buffer.find("</think>")
+                                if end == -1:
+                                    break
+                                buffer = buffer[end + len("</think>") :]
+                                in_think = False
+                                just_closed_think = True
+                            else:
+                                start = buffer.find("<think>")
+                                if start == -1:
+                                    if just_closed_think:
+                                        buffer = buffer.lstrip("\n")
+                                        just_closed_think = False
+                                    yield buffer
+                                    buffer = ""
+                                    break
+                                if start > 0:
+                                    yield buffer[:start]
+                                buffer = buffer[start + len("<think>") :]
+                                in_think = True
+                                just_closed_think = False
+            if buffer and not in_think:
+                if just_closed_think:
+                    buffer = buffer.lstrip("\n")
+                yield buffer
 
     async def close(self) -> None:
         if self._client:

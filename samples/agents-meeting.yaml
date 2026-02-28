@@ -1,37 +1,45 @@
-title: "Test debat avec Ollama"
+title: "Test debat avec lmstudio"
 
 agents:
   - name: "Moderateur"
     role: "Anime le debat, synthetise et pose des questions"
-    provider: "ollama"
-    model: "qwen3.5:35b"
+    provider: "lmstudio"
+    model: "qwen3.5-35b-a3b"
     temperature: 0.5
     is_leader: true
-    base_url: "http://192.168.1.12:1234"
+    extra:
+      reasoning: "off"
+    base_url: "http://192.168.1.12:1234/v1"
 
   - name: "Optimiste"
     role: "Voit les opportunites et le potentiel de l'IA"
-    provider: "ollama"
-    model: "qwen3.5:35b"
+    provider: "lmstudio"
+    model: "qwen3.5-35b-a3b"
     temperature: 0.7
     is_leader: false
-    base_url: "http://192.168.1.12:1234"
+    extra:
+      reasoning: "off"
+    base_url: "http://192.168.1.12:1234/v1"
 
   - name: "Sceptique"
     role: "Remet en question les benefices et souligne les risques"
-    provider: "ollama"
-    model: "qwen3.5:35b"
+    provider: "lmstudio"
+    model: "qwen3.5-35b-a3b"
     temperature: 0.7
     is_leader: false
-    base_url: "http://192.168.1.12:1234"
+    extra:
+      reasoning: "off"
+    base_url: "http://192.168.1.12:1234/v1"
 
   - name: "Realiste"
     role: "Adopte une position nuancée, reconnaissant les avantages tout en restant conscient des limites"
-    provider: "ollama"
-    model: "qwen3.5:35b"
+    provider: "lmstudio"
+    model: "qwen3.5:35b-a3b"
     temperature: 0.7
     is_leader: false
-    base_url: "http://192.168.1.12:1234"
+    extra:
+      reasoning: "off"
+    base_url: "http://192.168.1.12:1234/v1"
 
 debate:
   rounds: 2

@@ -101,11 +101,12 @@ api_keys:
   gemini: "env:GEMINI_API_KEY"
   ollama: "http://localhost:11434"
   custom: "env:CUSTOM_API_KEY"
+  lmstudio: "env:LMSTUDIO_API_KEY"  # Optionnel, LM Studio n'exige pas de clé
 
 agents:
   - name: "Nom de l'agent"
     role: "Rôle/description de l'agent"
-    provider: "openai | anthropic | gemini | ollama | custom"
+    provider: "openai | anthropic | gemini | ollama | custom | lmstudio"
     model: "gpt-4o"
     temperature: 0.7
     max_tokens: 2000
@@ -150,20 +151,21 @@ debate:
 | `gemini`    | string | Clé API Google Gemini (ou `env:VARIABLE`) |
 | `ollama`    | string | URL du serveur Ollama                     |
 | `custom`    | string | Clé API custom (ou `env:VARIABLE`)        |
+| `lmstudio`  | string | Clé API LM Studio (optionnel)             |
 
 #### agents[]
 
-| Paramètre     | Type    | Description                                         | Défaut   |
-| ------------- | ------- | --------------------------------------------------- | -------- |
-| `name`        | string  | Nom de l'agent                                      | -        |
-| `role`        | string  | Rôle/description de l'agent                         | -        |
-| `provider`    | string  | `openai`, `anthropic`, `gemini`, `ollama`, `custom` | -        |
-| `model`       | string  | Modèle à utiliser                                   | `gpt-4o` |
-| `temperature` | float   | Température (0.0-2.0)                               | 0.7      |
-| `max_tokens`  | int     | Limite de tokens                                    | -        |
-| `api_key`     | string  | Clé API locale (ou `env:VARIABLE`)                  | -        |
-| `base_url`    | string  | URL de l'API (remplace la valeur par défaut)        | -        |
-| `is_leader`   | boolean | Agent leader/modérateur                             | `false`  |
+| Paramètre     | Type    | Description                                                          | Défaut   |
+| ------------- | ------- | -------------------------------------------------------------------- | -------- |
+| `name`        | string  | Nom de l'agent                                                       | -        |
+| `role`        | string  | Rôle/description de l'agent                                          | -        |
+| `provider`    | string  | `openai`, `anthropic`, `gemini`, `ollama`, `custom`, `lmstudio`      | -        |
+| `model`       | string  | Modèle à utiliser                                                    | `gpt-4o` |
+| `temperature` | float   | Température (0.0-2.0)                                                | 0.7      |
+| `max_tokens`  | int     | Limite de tokens                                                     | -        |
+| `api_key`     | string  | Clé API locale (ou `env:VARIABLE`)                                   | -        |
+| `base_url`    | string  | URL de l'API (remplace la valeur par défaut)                         | -        |
+| `is_leader`   | boolean | Agent leader/modérateur                                              | `false`  |
 
 #### debate
 
@@ -196,6 +198,7 @@ debate:
 | Gemini    | `gemini-2.0-flash`, `gemini-1.5-pro`, etc.         |
 | Ollama    | Modèles locaux (`llama3`, `mistral`, `phi3`, etc.) |
 | Custom    | API compatible OpenAI                              |
+| LM Studio | Modèles locaux chargés dans LM Studio              |
 
 ### Ollama (local)
 
@@ -213,6 +216,31 @@ agents:
     provider: "ollama"
     model: "llama3"
     base_url: "http://localhost:11434"
+```
+
+### LM Studio (local)
+
+Pour utiliser LM Studio en local :
+
+1. Installer LM Studio : https://lmstudio.ai
+2. Télécharger un modèle depuis l'interface LM Studio
+3. Démarrer le serveur local dans LM Studio (onglet "Local Server")
+4. Le serveur écoute par défaut sur `http://localhost:1234`
+
+Aucune clé API n'est requise. Le nom du modèle doit correspondre exactement à l'identifiant affiché dans LM Studio.
+
+Le paramètre `reasoning` (via `extra:`) contrôle le thinking des modèles qui le supportent (ex: DeepSeek-R1, QwQ). Valeurs possibles : `off`, `low`, `medium`, `high`, `on`. Si absent, le comportement par défaut du modèle s'applique.
+
+Exemple de configuration :
+
+```yaml
+agents:
+  - name: "Agent1"
+    provider: "lmstudio"
+    model: "deepseek-r1-distill-qwen-7b"  # identifiant exact du modèle chargé dans LM Studio
+    # base_url: "http://localhost:1234"    # valeur par défaut
+    extra:
+      reasoning: "off"   # désactive le thinking — valeurs : off, low, medium, high, on
 ```
 
 ## Exemple complet
@@ -388,11 +416,12 @@ api_keys:
   gemini: "env:GEMINI_API_KEY"
   ollama: "http://localhost:11434"
   custom: "env:CUSTOM_API_KEY"
+  lmstudio: "env:LMSTUDIO_API_KEY"  # Optional, LM Studio does not require a key
 
 agents:
   - name: "Agent name"
     role: "Role/description of the agent"
-    provider: "openai | anthropic | gemini | ollama | custom"
+    provider: "openai | anthropic | gemini | ollama | custom | lmstudio"
     model: "gpt-4o"
     temperature: 0.7
     max_tokens: 2000
@@ -437,20 +466,21 @@ debate:
 | `gemini`    | string | Google Gemini API key (or `env:VARIABLE`) |
 | `ollama`    | string | Ollama server URL                         |
 | `custom`    | string | Custom API key (or `env:VARIABLE`)        |
+| `lmstudio`  | string | LM Studio API key (optional)              |
 
 #### agents[]
 
-| Parameter     | Type    | Description                                         | Default  |
-| ------------- | ------- | --------------------------------------------------- | -------- |
-| `name`        | string  | Agent name                                          | -        |
-| `role`        | string  | Role/description of the agent                       | -        |
-| `provider`    | string  | `openai`, `anthropic`, `gemini`, `ollama`, `custom` | -        |
-| `model`       | string  | Model to use                                        | `gpt-4o` |
-| `temperature` | float   | Temperature (0.0-2.0)                               | 0.7      |
-| `max_tokens`  | int     | Token limit                                         | -        |
-| `api_key`     | string  | Local API key (or `env:VARIABLE`)                   | -        |
-| `base_url`    | string  | API URL (replaces default value)                    | -        |
-| `is_leader`   | boolean | Leader/moderator agent                              | `false`  |
+| Parameter     | Type    | Description                                                          | Default  |
+| ------------- | ------- | -------------------------------------------------------------------- | -------- |
+| `name`        | string  | Agent name                                                           | -        |
+| `role`        | string  | Role/description of the agent                                        | -        |
+| `provider`    | string  | `openai`, `anthropic`, `gemini`, `ollama`, `custom`, `lmstudio`      | -        |
+| `model`       | string  | Model to use                                                         | `gpt-4o` |
+| `temperature` | float   | Temperature (0.0-2.0)                                                | 0.7      |
+| `max_tokens`  | int     | Token limit                                                          | -        |
+| `api_key`     | string  | Local API key (or `env:VARIABLE`)                                    | -        |
+| `base_url`    | string  | API URL (replaces default value)                                     | -        |
+| `is_leader`   | boolean | Leader/moderator agent                                               | `false`  |
 
 #### debate
 
@@ -483,6 +513,7 @@ debate:
 | Gemini    | `gemini-2.0-flash`, `gemini-1.5-pro`, etc.       |
 | Ollama    | Local models (`llama3`, `mistral`, `phi3`, etc.) |
 | Custom    | OpenAI-compatible API                            |
+| LM Studio | Local models loaded in LM Studio                 |
 
 ### Ollama (local)
 
@@ -500,6 +531,31 @@ agents:
     provider: "ollama"
     model: "llama3"
     base_url: "http://localhost:11434"
+```
+
+### LM Studio (local)
+
+To use LM Studio locally:
+
+1. Install LM Studio: https://lmstudio.ai
+2. Download a model from the LM Studio interface
+3. Start the local server in LM Studio ("Local Server" tab)
+4. The server listens on `http://localhost:1234` by default
+
+No API key is required. The model name must exactly match the identifier shown in LM Studio.
+
+The `reasoning` parameter (via `extra:`) controls the thinking behaviour of supported models (e.g. DeepSeek-R1, QwQ). Accepted values: `off`, `low`, `medium`, `high`, `on`. If omitted, the model's default behaviour applies.
+
+Configuration example:
+
+```yaml
+agents:
+  - name: "Agent1"
+    provider: "lmstudio"
+    model: "deepseek-r1-distill-qwen-7b"  # exact model identifier loaded in LM Studio
+    # base_url: "http://localhost:1234"    # default value
+    extra:
+      reasoning: "off"   # disable thinking — values: off, low, medium, high, on
 ```
 
 ## Complete example

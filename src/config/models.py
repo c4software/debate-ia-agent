@@ -13,6 +13,9 @@ class APIKeysConfig(BaseModel):
     gemini: str | None = Field(default=None, description="Google Gemini API key")
     ollama: str | None = Field(default=None, description="Ollama URL (optional)")
     custom: str | None = Field(default=None, description="Custom API key")
+    lmstudio: str | None = Field(
+        default=None, description="LM Studio API key (optional, not required by default)"
+    )
 
     @field_validator("openai", "anthropic", "gemini", "custom")
     @classmethod
@@ -28,7 +31,9 @@ class AgentConfig(BaseModel):
 
     name: str = Field(..., description="Agent name")
     role: str = Field(..., description="Role/description of the agent")
-    provider: str = Field(..., description="Provider: openai, anthropic, gemini, ollama, custom")
+    provider: str = Field(
+        ..., description="Provider: openai, anthropic, gemini, ollama, custom, lmstudio"
+    )
     model: str = Field(default="gpt-4o", description="Model to use")
     temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     max_tokens: int | None = Field(default=None, description="Token limit")

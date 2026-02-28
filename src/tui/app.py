@@ -537,6 +537,7 @@ class DebateScreen(Screen):
     BINDINGS = [
         Binding("escape", "stop_debate", "Stop", show=True, priority=True),
         Binding("c", "continue_debate", "Continue", show=True),
+        Binding("plus", "add_round", "+1 Round", show=True),
     ]
 
     CSS = """
@@ -852,6 +853,10 @@ class DebateScreen(Screen):
             elapsed = self._elapsed_str()
             elapsed_str = f" · {elapsed}" if elapsed else ""
             status.update(f"[green bold]Debate ended!{elapsed_str}[/green bold]")
+            try:
+                self.app.refresh_bindings()
+            except Exception:
+                pass
 
         elif event.type == "continuation_thinking":
             pass  # Dialog opening is done manually via the c key
@@ -1026,6 +1031,7 @@ class DebateScreen(Screen):
                 try:
                     self.query_one("#status", Label).update("[yellow]Debate stopped.[/yellow]")
                     self._debate_ended = True
+                    self.app.refresh_bindings()
                 except Exception:
                     pass
 
@@ -1042,8 +1048,8 @@ class AgentsMeetingApp(App):
         Binding("q", "quit", "Quit", show=True),
         Binding("m", "toggle_leader", "Moderator", show=True),
         Binding("w", "save_debate", "Save", show=True),
-        Binding("c", "continue_debate", "Continue", show=True),
-        Binding("plus", "add_round", "+1 Round", show=True),
+        Binding("c", "continue_debate", "Continue", show=False),
+        Binding("plus", "add_round", "+1 Round", show=False),
         Binding("r", "new_question", "New question", show=True),
     ]
 

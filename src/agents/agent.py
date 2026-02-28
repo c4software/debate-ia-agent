@@ -12,6 +12,7 @@ from src.providers import (
     OllamaProvider,
     CustomProvider,
     GeminiProvider,
+    LMStudioProvider,
 )
 
 
@@ -82,6 +83,15 @@ class Agent:
                 model=self.config.model,
                 temperature=self.config.temperature,
                 max_tokens=self.config.max_tokens,
+                api_key=api_key,
+                **extra,
+            )
+        elif self.config.provider == "lmstudio":
+            return LMStudioProvider(
+                model=self.config.model,
+                temperature=self.config.temperature,
+                max_tokens=self.config.max_tokens,
+                base_url=self.config.base_url or "http://localhost:1234",
                 api_key=api_key,
                 **extra,
             )

@@ -6,6 +6,7 @@ from .anthropic import AnthropicProvider
 from .ollama import OllamaProvider
 from .custom import CustomProvider
 from .gemini import GeminiProvider
+from .lmstudio import LMStudioProvider
 
 __all__ = [
     "LLMProvider",
@@ -16,4 +17,5 @@ __all__ = [
     "OllamaProvider",
     "CustomProvider",
     "GeminiProvider",
+    "LMStudioProvider",
 ]
