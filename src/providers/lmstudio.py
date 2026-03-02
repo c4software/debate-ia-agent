@@ -63,7 +63,12 @@ class LMStudioProvider(LLMProvider):
         if effective_system:
             api_messages.append({"role": "system", "content": effective_system})
         api_messages.extend(
-            {"role": m.role, "content": m.content, "name": m.name} for m in messages
+            {
+                k: v
+                for k, v in {"role": m.role, "content": m.content, "name": m.name}.items()
+                if v is not None
+            }
+            for m in messages
         )
         return api_messages
 

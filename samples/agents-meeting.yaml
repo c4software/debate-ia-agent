@@ -1,45 +1,45 @@
-title: "Test debat avec lmstudio"
+title: "Test debat multi-turn"
 
 agents:
   - name: "Moderateur"
     role: "Anime le debat, synthetise et pose des questions"
     provider: "lmstudio"
-    model: "qwen3.5-35b-a3b"
+    model: "qwen3.5-9b"
     temperature: 0.5
     is_leader: true
     extra:
       reasoning: "off"
-    base_url: "http://192.168.1.12:1234/v1"
+    base_url: "http://192.168.1.12:8001/v1"
 
   - name: "Optimiste"
     role: "Voit les opportunites et le potentiel de l'IA"
     provider: "lmstudio"
-    model: "qwen3.5-35b-a3b"
+    model: "qwen3.5-9b"
     temperature: 0.7
     is_leader: false
     extra:
       reasoning: "off"
-    base_url: "http://192.168.1.12:1234/v1"
+    base_url: "http://192.168.1.12:8001/v1"
 
   - name: "Sceptique"
     role: "Remet en question les benefices et souligne les risques"
     provider: "lmstudio"
-    model: "qwen3.5-35b-a3b"
+    model: "qwen3.5-9b"
     temperature: 0.7
     is_leader: false
     extra:
       reasoning: "off"
-    base_url: "http://192.168.1.12:1234/v1"
+    base_url: "http://192.168.1.12:8001/v1"
 
   - name: "Realiste"
     role: "Adopte une position nuancée, reconnaissant les avantages tout en restant conscient des limites"
     provider: "lmstudio"
-    model: "qwen3.5:35b-a3b"
+    model: "qwen3.5:9b"
     temperature: 0.7
     is_leader: false
     extra:
       reasoning: "off"
-    base_url: "http://192.168.1.12:1234/v1"
+    base_url: "http://192.168.1.12:8001/v1"
 
 debate:
   rounds: 2
